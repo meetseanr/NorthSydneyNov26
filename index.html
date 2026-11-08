@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Build AU — North Sydney Priorities</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --ink:#1d1d1f; --ink-med:#4a4a4c; --ink-light:#86868b; --ink-faint:#aeaeb2;
+  --bg:#f5f5f7; --card:#ffffff; --card-hover:#fcfcfd;
+  --border:#e5e5ea; --border-light:#f0f0f2;
+  --positive:#34c759; --positive-bg:#eafaf0; --positive-text:#1a7a32;
+  --negative:#ff3b30; --negative-bg:#fef0ef; --negative-text:#b81d14;
+  --warning:#ff9500; --warning-bg:#fff4e5; --warning-text:#8a5d00;
+  --neutral-bg:#f2f2f7; --blue:#1a4e8a; --link:#1a6fa0;
+  --rev:#5b4bc4; --rev-bg:#ece9fa; --rev-ink:#463aa8;
+  --end-bg:#e3f4ef; --end-ink:#16695a;
+  --urgent:#c9302c;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --radius:12px; --radius-sm:8px; --sidebar-w:56px; --brand:#8cc63e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;
+  -webkit-font-smoothing:antialiased;display:flex;min-height:100vh;font-size:13px}
+button{font-family:'Inter',sans-serif}
+.brand-rule{position:fixed;top:0;left:0;right:0;height:3px;background:var(--brand);z-index:80}
+.sidebar{width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;
+  align-items:center;padding:15px 0 12px;position:fixed;top:0;left:0;bottom:0;z-index:60}
+.sidebar-nav{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;margin-top:44px}
+.sidebar-item{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  border:none;background:none;position:relative}
+.sidebar-item svg{width:19px;height:19px;fill:var(--ink-faint)}
+.sidebar-item:hover{background:var(--neutral-bg)}
+.sidebar-item.active{background:#eef4e8}
+.sidebar-item.active svg{fill:#4e7a1e}
+.sidebar-item.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:20px;
+  border-radius:0 3px 3px 0;background:var(--brand)}
+.sidebar-bottom{display:flex;flex-direction:column;align-items:center;gap:4px}
+.main-area{flex:1;margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;min-width:0}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:3px;z-index:50}
+.logo{font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.3px;display:flex;align-items:center;gap:7px}
+.logo .mark{width:15px;height:15px;background:var(--ink);border-radius:2px;display:inline-flex;align-items:center;justify-content:center}
+.logo .mark svg{width:10px;height:10px;fill:#fff}
+.logo em{font-style:normal;font-weight:600;color:var(--brand)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-icon svg{width:18px;height:18px;fill:var(--ink-faint)}
+.user-name{font-size:13px;color:var(--ink-med);font-weight:500}
+.user-role{font-size:10px;color:var(--ink-faint);display:block;line-height:1.1}
+
+svg.chev{width:12px;height:12px;fill:var(--ink-faint);flex:0 0 12px}
+.cm-head svg.chev{transition:transform .15s}
+/* concept control bar */
+.ctrl{background:#232326;color:#fff;position:sticky;top:55px;z-index:49;padding:8px 30px;display:flex;align-items:center;
+  gap:18px;flex-wrap:wrap;font-size:11px;border-bottom:1px solid #35353a}
+.ctrl-tag{font-weight:700;letter-spacing:.6px;text-transform:uppercase;font-size:9px;color:#8e8e93;border:1px solid #48484d;
+  padding:2px 6px;border-radius:4px}
+.ctrl-group{display:flex;align-items:center;gap:7px}
+.ctrl-label{color:#98989d;font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.seg{display:flex;background:#38383c;border-radius:6px;padding:2px;gap:2px;flex-wrap:wrap}
+.seg button{border:none;background:none;color:#c7c7cc;font-size:11px;font-weight:500;padding:3px 10px;border-radius:4px;
+  cursor:pointer;white-space:nowrap}
+.seg button.on{background:#fff;color:#1d1d1f;font-weight:600}
+.ctrl select{background:#38383c;color:#fff;border:1px solid #48484d;border-radius:6px;font:inherit;font-size:11px;padding:4px 8px;
+  font-family:'Inter',sans-serif;max-width:300px}
+.ctrl-btn{border:1px solid #48484d;background:none;color:#c7c7cc;font-size:11px;font-weight:600;padding:3px 11px;border-radius:6px;cursor:pointer}
+.ctrl-btn.on{background:#fff;color:#1d1d1f;border-color:#fff}
+.ctrl-right{margin-left:auto;display:flex;gap:8px}
+.hidden{display:none!important}
+
+.page{flex:1;padding:22px 30px 90px;min-width:0;max-width:1640px}
+.crumb{font-size:11px;color:var(--ink-light);margin-bottom:10px}
+.crumb a{color:var(--ink-light);text-decoration:none;cursor:pointer}
+.crumb a:hover{color:var(--link)}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.page-title{font-size:19px;font-weight:600;letter-spacing:-.4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.page-title .back{width:16px;height:16px;fill:var(--ink-light);cursor:pointer}
+.page-sub{font-size:12px;color:var(--ink-light);margin-top:2px}
+.gap{height:16px}
+
+/* panels, tabs, tables */
+.panel{background:var(--card);border-radius:var(--radius);border:1px solid var(--border-light);box-shadow:var(--shadow-sm);
+  overflow:hidden;margin-bottom:16px}
+.tabs{display:flex;gap:22px;padding:0 18px;border-bottom:1px solid var(--border-light);align-items:center}
+.tab{font-size:13px;padding:13px 0;color:var(--ink-light);cursor:pointer;border:none;border-bottom:2px solid transparent;
+  font-weight:500;background:none;position:relative}
+.tab.on{color:var(--link);border-bottom-color:var(--link);font-weight:600}
+.tab:disabled{cursor:not-allowed;color:var(--ink-faint)}
+.tab .new{position:absolute;top:6px;right:-12px;width:7px;height:7px;border-radius:50%;background:var(--urgent)}
+.grp{padding:9px 18px;background:#fafafa;border-bottom:1px solid var(--border-light);border-top:1px solid var(--border-light);
+  font-size:12px;font-weight:600;color:var(--ink-med);display:flex;align-items:center;gap:7px}
+.grp .cnt{color:var(--ink-faint);font-weight:500}
+.grp svg{fill:var(--ink-faint);width:11px;height:11px}
+.tbar{display:flex;align-items:center;gap:14px;padding:10px 18px}
+.tbar svg{width:14px;height:14px;fill:var(--ink-faint)}
+table.t{width:100%;border-collapse:collapse;font-size:12px}
+table.t th{text-align:left;padding:9px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);
+  border-bottom:1px solid var(--border);background:#fbfbfc;white-space:nowrap}
+table.t th.chg{color:var(--rev-ink)}
+table.t td{padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--ink-med);vertical-align:middle}
+table.t tr:last-child td{border-bottom:none}
+table.t tbody tr.click{cursor:pointer}
+table.t tbody tr.click:hover td{background:#f7fafd}
+table.t tbody tr.hero td{background:#f6faff}
+table.t tbody tr.hero td:first-child{box-shadow:inset 3px 0 0 var(--link)}
+.appid{font-weight:600;color:var(--ink);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.appid svg{width:11px;height:11px;fill:var(--ink-faint)}
+.mono{font-variant-numeric:tabular-nums;white-space:nowrap}
+.dash,.muted{color:var(--ink-faint)}
+.age{font-weight:600;white-space:nowrap}
+.empty-row{padding:22px 18px;color:var(--ink-light);font-size:12px;text-align:center}
+
+/* people */
+.who{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.av{width:20px;height:20px;border-radius:50%;font-size:8px;font-weight:700;color:#fff;display:inline-flex;align-items:center;
+  justify-content:center;flex:0 0 20px}
+.av.lg{width:30px;height:30px;flex:0 0 30px;font-size:11px}
+.av.md{width:26px;height:26px;flex:0 0 26px;font-size:10px}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;
+  white-space:nowrap;line-height:1.45}
+.chip svg{width:10px;height:10px;flex:0 0 10px}
+.c-neutral{background:var(--neutral-bg);color:#86868b}
+.c-team{background:#e8f1fb;color:#1a6fa0}
+.c-prog{background:#fbf5e4;color:#846a10}.c-prog svg{fill:#c2a03a}
+.c-done{background:#ecf8f0;color:#22713a}.c-done svg{fill:#3d9159}
+.c-draft{background:#fdeceb;color:#b8524a}.c-draft svg{fill:#c86a62}
+.c-made{background:#fff8dc;color:#8a6d00}
+.c-await{background:#faeedc;color:#8a5c22}.c-await svg{fill:#c07f2a}
+.c-rev{background:var(--rev-bg);color:var(--rev-ink)}.c-rev svg{fill:var(--rev)}
+.c-end{background:var(--end-bg);color:var(--end-ink)}.c-end svg{fill:#2b8c78}
+.c-ret{background:#fbe6e4;color:#a4392f}.c-ret svg{fill:#c25146}
+.c-fin{background:var(--urgent);color:#fff;font-weight:700}.c-fin svg{fill:#fff}
+.c-det{background:var(--positive-bg);color:var(--positive-text)}.c-det svg{fill:#3d9159}
+.c-req{background:#eaf2fa;color:#22688f}
+.c-not{background:#f4eefb;color:#6b3fa0}
+.c-type-corr{background:#eaf2fa;color:#22688f}
+.c-type-rec{background:#f4eefb;color:#6b3fa0}
+.chip.g{background:#f2f2f7!important;color:#9a9aa0!important;font-weight:500!important}
+.chip.g svg{fill:#c2c2c8!important}
+.chip.big{font-size:12px;padding:3px 10px}
+
+/* buttons */
+.btn-out{border:1px solid var(--border);background:#fff;border-radius:var(--radius-sm);padding:6px 14px;font-size:12px;color:var(--ink-med);
+  font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-out:hover{background:var(--bg)}
+.btn-out svg{width:12px;height:12px;fill:var(--ink-light)}
+.btn-out:disabled{color:var(--ink-faint);cursor:not-allowed;background:#fafafa}
+.btn-out:disabled svg{fill:var(--ink-faint)}
+.btn-wide{width:100%;justify-content:center;margin-top:10px}
+.btn-primary{background:var(--blue);color:#fff;border:1px solid var(--blue);border-radius:6px;padding:6px 16px;font-size:12px;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-primary svg{width:12px;height:12px;fill:#fff}
+.btn-primary:hover{background:#153f70}
+.btn-primary:disabled{background:#e5e5ea;border-color:#e5e5ea;color:var(--ink-faint);cursor:not-allowed}
+.btn-primary:disabled svg{fill:var(--ink-faint)}
+.btn-danger{background:#fff;color:#a4392f;border:1px solid #ecc3be;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-danger:hover{background:#fdf3f2}
+.btn-ok{background:#1f7a4a;color:#fff;border:1px solid #1f7a4a;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px}
+.btn-ok svg{width:12px;height:12px;fill:#fff}
+.btn-ok:hover{background:#185f3a}
+.btn-link{background:none;border:none;color:var(--link);font-size:12px;cursor:pointer;padding:0;font-weight:500}
+.btn-link:hover{text-decoration:underline}
+.btn-link:disabled{color:var(--ink-faint);cursor:not-allowed;text-decoration:none}
+.ibtn{background:none;border:none;cursor:pointer;width:26px;height:26px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center}
+.ibtn svg{width:13px;height:13px;fill:var(--ink-light)}
+.ibtn:hover{background:var(--neutral-bg)}
+.ibtn:disabled{cursor:not-allowed;opacity:.35}
+.ibtn:disabled:hover{background:none}
+.wrap-dis{display:inline-block}
+
+/* banners */
+.banner{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border-radius:9px;font-size:12px;margin-bottom:12px;line-height:1.5}
+.banner svg.bi{width:15px;height:15px;flex:0 0 15px;margin-top:1px}
+.banner b{font-weight:600}
+.banner .bx{flex:1;min-width:0}
+.banner .ba{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.b-info{background:#eef6fd;color:#1d4f73}.b-info svg.bi{fill:#3d86c0}
+.b-ok{background:#ecf8f0;color:#1f5f33}.b-ok svg.bi{fill:#3d9159}
+.b-warn{background:#fff4e5;color:#7a5200}.b-warn svg.bi{fill:#d4890a}
+.b-lock{background:#f2f2f7;color:#4a4a4c}.b-lock svg.bi{fill:#86868b}
+.b-rev{background:var(--rev-bg);color:#3b3190}.b-rev svg.bi{fill:var(--rev)}
+.b-ret{background:#fbe9e7;color:#8a2e25}.b-ret svg.bi{fill:#c25146}
+.b-fin{background:#fdecea;color:#8a1f1a;border:1px solid #f3c6c2}.b-fin svg.bi{fill:var(--urgent)}
+.bsub{font-size:11px;opacity:.85;margin-top:2px}
+.quote{margin-top:6px;padding:7px 10px;background:rgba(255,255,255,.65);border-radius:6px;font-style:italic}
+
+/* overview */
+.ov-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.ov-card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;
+  display:flex;flex-direction:column;position:relative}
+.ov-card.focus{border:2px solid #d93025;box-shadow:0 0 0 3px rgba(217,48,37,.10),var(--shadow-sm)}
+.focus-tag{position:absolute;top:-1px;right:14px;background:#d93025;color:#fff;font-size:9px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;padding:2px 7px;border-radius:0 0 5px 5px}
+.ov-head{padding:12px 16px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ov-title{font-size:13px;font-weight:600;color:var(--ink)}
+.ov-body{padding:12px 16px;flex:1;display:flex;flex-direction:column}
+.ov-body .btn-wide{margin-top:auto}
+.kv{display:flex;padding:5px 0;font-size:12px;border-bottom:1px solid #f7f7f9;gap:10px}
+.kv:last-child{border-bottom:none}
+.kv dt{width:128px;flex:0 0 128px;color:var(--ink-light)}
+.kv dd{color:var(--ink-med);min-width:0}
+.kv dd a{color:var(--link);text-decoration:none}
+.mapbox{height:200px;background:#fbeef5;position:relative;overflow:hidden;border-radius:8px;border:1px solid var(--border-light);
+  display:flex;align-items:center;justify-content:center}
+.mapbox::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(56deg,transparent 0 40px,#f0dbe6 40px 41px),
+  repeating-linear-gradient(146deg,transparent 0 54px,#f0dbe6 54px 55px)}
+.mapbox .lot{position:relative;z-index:2;border:2px solid #d4a017;background:rgba(255,214,0,.28);padding:8px 20px;font-size:11px;font-weight:700;
+  color:#8a6d00;transform:rotate(-6deg)}
+table.mini{width:100%;border-collapse:collapse;font-size:11.5px}
+table.mini th{text-align:left;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);
+  padding:6px 8px 6px 0;border-bottom:1px solid var(--border-light);white-space:nowrap}
+table.mini td{padding:8px 8px 8px 0;border-bottom:1px solid var(--border-light);color:var(--ink-med);vertical-align:middle}
+table.mini tr:last-child td{border-bottom:none}
+.doc{display:flex;align-items:center;gap:9px;padding:7px 10px;font-size:12px;background:#fafafb;border-radius:6px;margin-bottom:6px;color:var(--ink-med)}
+.doc span.pdf{font-size:9px;font-weight:700;color:#c0392b;border:1px solid #f0cfcb;border-radius:3px;padding:1px 3px}
+.hint{font-size:11px;color:var(--ink-light);margin-bottom:8px}
+.mini-en{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px}
+.mini-en .n{width:16px;color:var(--ink-faint);font-size:11px;font-variant-numeric:tabular-nums}
+.mini-en .chip{margin-left:auto}
+
+/* correspondence */
+.cr-wrap{display:grid;grid-template-columns:330px 1fr;min-height:640px}
+.cr-left{border-right:1px solid var(--border-light);background:#fff}
+.cr-left-h{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border-light)}
+.cr-left-h b{font-size:13px;font-weight:600}
+.cr-item{padding:11px 16px;border-bottom:1px solid var(--border-light);cursor:pointer;border-left:3px solid transparent}
+.cr-item:hover{background:#fafbfc}
+.cr-item.on{background:#eaf3fb;border-left-color:var(--link)}
+.cr-item-t{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink);flex-wrap:wrap}
+.cr-item-m{font-size:11px;color:var(--ink-light);margin-top:3px}
+.cr-iss{padding:6px 16px 6px 34px;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-med);border-bottom:1px solid #f6f6f8}
+.cr-iss .d{font-size:10px;color:var(--ink-faint)}
+.cr-right{min-width:0;background:#fff}
+.cr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border-light);flex-wrap:wrap}
+.cr-name{font-size:16px;font-weight:600;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.cr-meta{font-size:11.5px;color:var(--ink-light);margin-top:3px}
+.cr-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cr-body{padding:16px 20px 30px}
+.tplrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px dashed #c9d6e4;background:#f8fbfe;border-radius:9px;margin-bottom:14px}
+.tplrow label{font-size:11px;font-weight:600;color:var(--ink-med);text-transform:uppercase;letter-spacing:.4px}
+.sel{border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12.5px;font-family:'Inter',sans-serif;background:#fff;color:var(--ink)}
+.tplrow .note{font-size:11px;color:var(--ink-light);flex-basis:100%}
+.sec-card{border:1px solid var(--border-light);border-radius:9px;margin-bottom:12px;overflow:hidden}
+.sec-card-h{display:flex;align-items:center;gap:9px;padding:10px 14px;background:#f7f7f9;font-size:12.5px;font-weight:600;color:var(--ink)}
+.sec-card-h .sp{margin-left:auto;display:flex;gap:2px;align-items:center}
+.sec-card-h .ic{width:13px;height:13px;fill:var(--ink-light)}
+.sec-card-b{padding:12px 14px}
+.sec-card-m{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-light);margin-bottom:8px}
+.lbox{border:1px solid var(--border);border-radius:7px;padding:11px 14px;font-size:12.5px;line-height:1.6;color:var(--ink-med);background:#fbfbfc}
+.lbox p+p{margin-top:8px}
+.lbox.ed{background:#fff;outline:2px solid rgba(26,111,160,.25);outline-offset:-1px}
+.htitle{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-size:12.5px;font-weight:600;font-family:'Inter',sans-serif;margin-bottom:8px}
+.edbar{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.outcome{border:1px solid #cfe7d6;background:#f3fbf5;border-radius:9px;padding:12px 14px;margin-bottom:14px}
+.outcome-h{font-size:12px;font-weight:600;color:#1f5f33;display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.outcome-h svg{width:13px;height:13px;fill:#3d9159}
+.outcome-x{font-size:12.5px;color:var(--ink-med);line-height:1.55}
+.outcome-m{font-size:11px;color:var(--ink-light);margin-top:6px}
+
+/* logs */
+.log{font-size:11.5px}
+.log-row{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid #f4f4f6}
+.log-row:last-child{border-bottom:none}
+.log-row .w{color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.log-row .e{color:var(--ink-med)}
+.log-row .e b{color:var(--ink);font-weight:600}
+.log-row .nt{display:block;color:var(--ink-light);font-style:italic;margin-top:2px}
+.collap-h{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.collap-h svg.chev{width:12px;height:12px;fill:var(--ink-faint);transition:transform .15s}
+.shut .collap-h svg.chev{transform:rotate(-90deg)}
+.shut .collap-b{display:none}
+
+/* assessment */
+.as-wrap{display:flex;gap:14px;align-items:flex-start}
+.as-main{flex:1;min-width:0}
+.as-side{width:380px;flex:0 0 380px}
+.atabs{display:flex;gap:22px;padding:0 4px;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.cm-row{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid var(--border-light);font-size:12.5px;font-weight:500;color:var(--ink)}
+.cm-row .sp{margin-left:auto;display:flex;gap:4px}
+.cm-head{display:flex;align-items:center;gap:10px;padding:13px 18px}
+.cm-head b{font-size:13.5px;font-weight:600}
+.fbody{padding:16px 18px}
+.flab{font-size:12px;font-weight:600;color:var(--ink);margin:0 0 8px;display:block}
+.flab .req{color:#c0392b}
+.fsec+.fsec{margin-top:16px}
+.posrow{display:flex;gap:8px;flex-wrap:wrap}
+.posbtn{padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:#fff;font-size:12.5px;color:var(--ink-med);cursor:pointer;white-space:nowrap}
+.posbtn:hover{background:var(--bg)}
+.posbtn.sel{background:#eef6fd;border-color:#9cc3e3;color:#1a4e8a;font-weight:500}
+.posbtn.sel.green{background:#e9f7ec;border-color:#a9d9b4;color:#1a7a32}
+.posbtn.ro{cursor:default;color:var(--ink-faint)}
+.posbtn.ro:hover{background:#fff}
+.posbtn.ro.sel{color:#1a4e8a;background:#f3f7fb}
+.posbtn.ro.sel.green{color:#1a7a32;background:#f1faf3}
+.inp{border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-size:12.5px;font-family:'Inter',sans-serif;color:var(--ink);background:#fff}
+.inp:disabled{background:#f7f7f9;color:var(--ink-light)}
+.editor{border:1px solid var(--border);border-radius:7px;overflow:hidden;background:#fff}
+.etool{display:flex;align-items:center;gap:1px;padding:5px 7px;border-bottom:1px solid var(--border-light);background:#fbfbfc;flex-wrap:wrap}
+.etool span.tb{width:26px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink-light);border-radius:4px}
+.etool i.div{width:1px;height:16px;background:var(--border);margin:0 6px;display:inline-block}
+.ebody{padding:12px 15px;min-height:66px;font-size:12.5px;line-height:1.6;color:var(--ink-med);outline:none}
+.ebody[contenteditable="false"]{background:#fafafb;color:var(--ink-light)}
+.factions{display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid var(--border-light);flex-wrap:wrap}
+.factions .sp{margin-left:auto;display:flex;gap:10px;align-items:center}
+.card-h{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--border-light)}
+.card-h b{font-size:13.5px;font-weight:600}
+.card-h .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
+.new-tag{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:#d93025;border-radius:3px;padding:2px 6px}
+.en-list{border:1px solid var(--border-light);border-radius:9px;overflow:hidden}
+.en-row{display:grid;grid-template-columns:22px 30px 1fr auto auto;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border-light)}
+.en-row:last-child{border-bottom:none}
+.en-row.cur{background:#f7f5fe}
+.en-n{font-size:11px;color:var(--ink-faint);font-variant-numeric:tabular-nums;text-align:center}
+.en-name{font-size:12.5px;font-weight:600;color:var(--ink)}
+.en-title{font-size:11px;color:var(--ink-light)}
+.en-note{grid-column:3/6;font-size:11.5px;color:var(--ink-med);background:#fafafb;border-radius:6px;padding:7px 10px;margin-top:-2px}
+.en-note b{font-weight:600}
+.en-empty{padding:16px;font-size:12px;color:var(--ink-light);text-align:center;background:#fbfbfc}
+.sig-tag{font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6b3fa0;background:#f4eefb;border-radius:3px;padding:1px 5px;margin-left:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fhelp{font-size:11px;color:var(--ink-light);margin-top:5px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin-top:4px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-med);padding:4px 0}
+.chk svg{width:14px;height:14px;flex:0 0 14px;margin-top:2px}
+.chk.ok svg{fill:#3d9159}
+.chk.no svg{fill:#c25146}
+.chk.no{color:#8a2e25}
+.chk .s{display:block;font-size:10.5px;color:var(--ink-light)}
+.side-sec{border-bottom:1px solid var(--border-light)}
+.side-sec .collap-h{padding:13px 16px;font-size:13px;font-weight:600;color:var(--ink);justify-content:space-between}
+.side-sec .collap-b{padding:0 16px 14px}
+.side-out{border:1px solid var(--border-light);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
+.side-out .h{display:flex;align-items:center;gap:7px;font-weight:600;color:var(--ink);margin-bottom:4px;flex-wrap:wrap}
+.side-out .x{color:var(--ink-med);line-height:1.5}
+.side-out .m{color:var(--ink-faint);font-size:10.5px;margin-top:4px}
+.det-ro{font-size:12.5px;color:var(--ink-med)}
+
+/* modal */
+.mask{position:fixed;inset:0;background:rgba(29,29,31,.42);z-index:400;display:none;align-items:center;justify-content:center;padding:24px}
+.mask.on{display:flex}
+.modal{background:#fff;border-radius:10px;box-shadow:0 18px 48px rgba(0,0,0,.22);width:100%;max-width:520px;overflow:hidden;max-height:calc(100vh - 48px);
+  display:flex;flex-direction:column}
+.modal.wide{max-width:860px}
+.m-head{display:flex;align-items:center;gap:12px;padding:18px 22px 6px}
+.m-grip{display:grid;grid-template-columns:3px 3px;gap:3px}
+.m-grip i{width:3px;height:3px;border-radius:50%;background:var(--ink-faint);display:block}
+.m-title{font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
+.m-x{margin-left:auto;background:none;border:none;cursor:pointer;font-size:20px;line-height:1;color:var(--ink-light);padding:2px 4px}
+.m-body{padding:10px 22px 16px;overflow-y:auto;font-size:12.5px;color:var(--ink-med)}
+.m-body p{margin-bottom:10px;line-height:1.55}
+.m-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 22px;border-top:1px solid var(--border-light);background:#fbfbfc}
+.m-foot .r{display:flex;gap:10px;margin-left:auto}
+.btn-flat{background:none;border:none;font-size:13px;color:var(--ink-med);font-weight:500;cursor:pointer;padding:6px 4px}
+.ta{width:100%;min-height:90px;border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:12.5px;
+  color:var(--ink);resize:vertical;line-height:1.5}
+.ta.bad{border-color:#e0827b}
+.m-err{font-size:11.5px;color:#b81d14;margin-top:6px;display:none}
+.m-err.on{display:block}
+.pick{display:flex;align-items:center;gap:11px;padding:9px 12px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.pick:hover{background:#fafbfc}
+.pick.on{border-color:#9cc3e3;background:#eef6fd}
+.pick.dis{opacity:.5;cursor:not-allowed}
+.pick .nm{font-size:13px;font-weight:600;color:var(--ink)}
+.pick .tt{font-size:11px;color:var(--ink-light)}
+.pick .rt{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-light)}
+.pick .ck{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.pick.on .ck{background:var(--link);border-color:var(--link)}
+.sumbox{background:#f7f7f9;border-radius:8px;padding:10px 14px;margin:10px 0}
+.sumrow{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:4px 0;font-size:12px}
+.sumrow span:first-child{color:var(--ink-light)}
+.warnbox{display:flex;gap:10px;background:#fff4e5;border:1px solid #f3dcb5;border-radius:8px;padding:11px 13px;color:#7a5200;font-size:12px;margin-bottom:10px}
+.warnbox svg{width:15px;height:15px;fill:#d4890a;flex:0 0 15px;margin-top:1px}
+
+/* document preview */
+.paper-wrap{background:#e9e9ee;padding:22px;max-height:70vh;overflow-y:auto}
+.paper{background:#fff;max-width:700px;margin:0 auto;padding:40px 48px 46px;box-shadow:0 2px 10px rgba(0,0,0,.12);font-family:Arial,Helvetica,sans-serif;
+  color:#1a1a1a;font-size:12px;line-height:1.5;position:relative;overflow:hidden}
+.paper .lh{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #e2581f;padding-bottom:10px;margin-bottom:18px}
+.paper .lh .cn{font-size:17px;font-weight:700;letter-spacing:.5px;color:#e2581f;text-transform:uppercase;line-height:1.1}
+.paper .lh .ad{font-size:9.5px;text-align:right;color:#444;line-height:1.4}
+.paper h1{font-size:15px;text-align:center;font-weight:700;text-transform:uppercase;margin:6px 0 4px;letter-spacing:.2px}
+.paper h1 .dr{color:#c9302c}
+.paper .subh{text-align:center;font-size:11px;color:#333;margin-bottom:16px}
+.paper table.pt{width:100%;border-collapse:collapse;margin-bottom:14px}
+.paper table.pt td{padding:9px 6px;border-bottom:1px solid #d6d6d6;vertical-align:top;font-size:11.5px}
+.paper table.pt td:first-child{width:36%;font-weight:700}
+.paper table.pt tr.hl td{background:#fff8e6;box-shadow:inset 0 0 0 2px #e8a33d}
+.paper .ln1{font-weight:700}
+.paper p{margin-bottom:9px}
+.paper h3{font-size:12px;font-weight:700;margin:12px 0 4px}
+.paper .sig{margin-top:22px;position:relative}
+.paper .sig.hl{outline:2px solid #e8a33d;outline-offset:8px;background:#fff8e6}
+.paper .sigline{width:260px;border-bottom:1px solid #222;height:30px;margin:6px 0 4px}
+.paper .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px 30px}
+.paper .pend{font-size:11px;color:#8a5d00;background:#fff4e5;border:1px dashed #e8b36a;padding:9px 12px;border-radius:4px;font-family:'Inter',sans-serif}
+.paper .wm{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-size:110px;font-weight:800;color:rgba(201,48,44,.08);
+  letter-spacing:10px;pointer-events:none;font-family:'Inter',sans-serif}
+.paper .ext{font-size:10px;color:#888;font-family:'Inter',sans-serif;text-align:center;margin:10px 0;border-top:1px dashed #ccc;border-bottom:1px dashed #ccc;padding:5px}
+.doc-note{font-size:11.5px;color:var(--ink-light);padding:10px 22px;background:#fff;border-bottom:1px solid var(--border-light)}
+.doc-note b{color:var(--ink-med)}
+
+/* tooltip, toast, key */
+#tt{position:fixed;z-index:450;background:#1d1d1f;color:#fff;border-radius:5px;padding:8px 12px;opacity:0;pointer-events:none;transition:opacity .12s;
+  font-size:11px;line-height:1.5;box-shadow:0 4px 14px rgba(0,0,0,.22);max-width:300px}
+#tt.on{opacity:1}
+#tt b{display:block;margin-bottom:2px}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#1d1d1f;color:#fff;padding:11px 18px;border-radius:9px;font-size:12.5px;
+  z-index:500;opacity:0;transition:all .25s;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:9px;pointer-events:none;max-width:640px}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast svg{width:14px;height:14px;fill:#7dd693;flex:0 0 14px}
+#keypanel{position:fixed;left:70px;bottom:16px;width:520px;max-height:calc(100vh - 130px);overflow-y:auto;background:#fff;border:1px solid var(--border);
+  border-radius:12px;box-shadow:var(--shadow-lg);padding:14px 18px;z-index:300;display:none;font-size:11.5px;color:var(--ink-med)}
+#keypanel.open{display:block}
+.key-h{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint);margin:14px 0 7px}
+.key-h:first-child{margin-top:0}
+.key-row{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:start;padding:4px 0;line-height:1.45}
+.key-row>span:first-child{font-weight:600;color:var(--ink)}
+.key-row a{color:var(--link);cursor:pointer;text-decoration:none}
+.key-row a:hover{text-decoration:underline}
+.key-f{margin-top:12px;padding-top:10px;border-top:1px solid var(--border-light);color:var(--ink-light);font-size:10.5px;line-height:1.5}
+
+/* gate */
+#gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+#gate.done{display:none}
+.gate-card{background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.04);padding:38px 44px 42px;width:100%;max-width:440px;text-align:center}
+.gate-title{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.4px;margin-bottom:14px}
+.gate-sub{font-size:13px;color:#8b96a8;line-height:1.6;margin-bottom:26px}
+.gate-input{width:100%;padding:12px 14px;border:1px solid #e3e5ea;border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;text-align:center;letter-spacing:3px;outline:none}
+.gate-input.bad{border-color:#e0827b}
+.gate-btn{width:100%;margin-top:14px;padding:13px 0;border:none;border-radius:9px;background:#1d1d1f;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.gate-err{font-size:12px;color:#b81d14;margin-top:14px;min-height:16px;visibility:hidden}
+.gate-err.show{visibility:visible}
+body.locked{overflow:hidden}
+.proto-tag{position:fixed;bottom:14px;right:14px;font-size:10px;color:var(--ink-faint);background:var(--card);padding:4px 11px;border-radius:6px;
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);z-index:100;max-width:560px}
+@media(max-width:1280px){.ov-grid{grid-template-columns:1fr 1fr}.as-wrap{flex-direction:column}.as-side{width:100%;flex:1 1 auto}}
+@media(max-width:900px){.ov-grid{grid-template-columns:1fr}.cr-wrap{grid-template-columns:1fr}.two,.checks{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{display:none}.main-area{margin-left:0}.page{padding:16px 16px 90px}}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-title">Build AU &mdash; North Sydney priorities</div>
+    <div class="gate-sub">Correspondence authorisation, recommendation endorsement<br/>and determination finalisation.<br/>This prototype is commercial in confidence.</div>
+    <input class="gate-input" id="gate-pw" type="password" autocomplete="off" spellcheck="false" />
+    <button class="gate-btn" id="gate-go">Continue</button>
+    <div class="gate-err" id="gate-err">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div class="brand-rule"></div>
+<nav class="sidebar">
+  <div class="sidebar-nav">
+    <button class="sidebar-item" data-nav="dash" title="Dashboard"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg></button>
+    <button class="sidebar-item" data-nav="apps" title="Applications"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg></button>
+    <button class="sidebar-item" title="Documents"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
+    <button class="sidebar-item" title="Teams"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></button>
+    <button class="sidebar-item" title="Settings"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg></button>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="sidebar-item" title="About"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
+  </div>
+</nav>
+
+<div class="main-area">
+  <div class="topbar">
+    <div class="logo"><span class="mark"><svg viewBox="0 0 24 24"><path d="M4 14h3v6H4zm6.5-6h3v12h-3zM17 11h3v9h-3z"/></svg></span>Objective <em>BUILD</em></div>
+    <div class="topbar-right">
+      <div class="topbar-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5S10.5 3.17 10.5 4v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
+      <span id="top-av"></span><span class="user-name" id="top-name"></span>
+    </div>
+  </div>
+
+  <div class="ctrl">
+    <span class="ctrl-tag">Concept controls</span>
+    <div class="ctrl-group"><span class="ctrl-label">Screen</span>
+      <div class="seg" id="seg-screen">
+        <button data-screen="dash">Dashboard</button>
+        <button data-screen="apps">All applications</button>
+        <button data-screen="ov">Application overview</button>
+        <button data-screen="corr">Correspondence</button>
+        <button data-screen="assess">Assessment</button>
+      </div>
+    </div>
+    <div class="ctrl-group"><span class="ctrl-label">Viewing as</span>
+      <div class="seg" id="seg-me"></div>
+    </div>
+    <div class="ctrl-group hidden" id="grp-auth"><span class="ctrl-label">Sean's authority to correspond</span>
+      <div class="seg" id="seg-auth"><button data-a="0">No</button><button data-a="1">Yes</button></div>
+    </div>
+    <div class="ctrl-group hidden" id="grp-pre"><span class="ctrl-label">Checklist, referrals, conditions</span>
+      <div class="seg" id="seg-pre"><button data-p="1">Complete</button><button data-p="0">Outstanding</button></div>
+    </div>
+    <div class="ctrl-right">
+      <select id="jump"></select>
+      <button class="ctrl-btn" id="btn-key">Key</button>
+    </div>
+  </div>
+
+  <div class="page" id="page"></div>
+</div>
+
+<div class="mask" id="mask"><div id="modal"></div></div>
+<div id="tt"></div>
+<div id="keypanel"></div>
+<div id="toast"></div>
+<div class="proto-tag">Build AU &mdash; North Sydney priorities: correspondence, endorsement &amp; determination &mdash; Sean Richards (Product) &mdash; This is a concept demonstration only and does not conform to the Objective Design Language. Commercial in confidence.</div>
+
+<script>
+
+/* ============================================================
+   NORTH SYDNEY PRIORITIES — one application, three flows
+     1. Correspondence: template, notice/request, authorisation
+     2. Recommendation: endorsement list, auto-routing, return/resume
+     3. Determination: finalise by an administration officer
+   DA303165 is the live record. Every other row is static fixture.
+   ============================================================ */
+
+/* ---------- icons ---------- */
+var I={
+ play:'<svg viewBox="0 0 16 16"><path d="M4 2l9 6-9 6z"/></svg>',
+ tick:'<svg viewBox="0 0 16 16"><path d="M6.2 12.6 1.9 8.3l1.3-1.3 3 2.9 6.6-6.5 1.3 1.3z"/></svg>',
+ pen:'<svg viewBox="0 0 16 16"><path d="M2 12.2 11.1 3l1.9 1.9L4 14H2v-1.8z"/></svg>',
+ clock:'<svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5A5.5 5.5 0 118 2.5a5.5 5.5 0 010 11zm.8-9h-1.6v4.4l3.4 2 .8-1.3-2.6-1.5V4.5z"/></svg>',
+ eye:'<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/></svg>',
+ bolt:'<svg viewBox="0 0 16 16"><path d="M9.5 1 3 9h4l-1 6 6.5-8h-4z"/></svg>',
+ ret:'<svg viewBox="0 0 16 16"><path d="M6 3 1.5 7 6 11V8.2c3.3 0 5.6 1 7.5 3.8-.6-3.6-2.8-6.6-7.5-7.2z"/></svg>',
+ send:'<svg viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>',
+ lock:'<svg viewBox="0 0 24 24"><path d="M18 8h-1V6A5 5 0 007 6v2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V10a2 2 0 00-2-2zM9 6a3 3 0 016 0v2H9V6zm3 11a2 2 0 110-4 2 2 0 010 4z"/></svg>',
+ info:'<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+ ok:'<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 15-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/></svg>',
+ warn:'<svg viewBox="0 0 16 16"><path d="M8 1.1 15.4 14.2H.6L8 1.1zm.9 4.8H7.1v4.5h1.8V5.9zm0 5.5H7.1v1.8h1.8v-1.8z"/></svg>',
+ x:'<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm5 13.6L15.6 17 12 13.4 8.4 17 7 15.6 10.6 12 7 8.4 8.4 7 12 10.6 15.6 7 17 8.4 13.4 12z"/></svg>',
+ edit:'<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>',
+ trash:'<svg viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>',
+ up:'<svg viewBox="0 0 24 24"><path d="M7.4 15.4 12 10.8l4.6 4.6L18 14l-6-6-6 6z"/></svg>',
+ down:'<svg viewBox="0 0 24 24"><path d="M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6z"/></svg>',
+ chev:'<svg class="chev" viewBox="0 0 24 24"><path d="M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6z"/></svg>',
+ doc:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>',
+ plus:'<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>',
+ back:'<svg class="back" viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg>',
+ copy:'<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"/></svg>',
+ search:'<svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 101-1l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>',
+ filter:'<svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>',
+ win:'<svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3h-7z"/></svg>'
+};
+
+/* ---------- people ---------- */
+var OFFICER='sean';
+var U={
+ sean:  {n:'Sean Richards',  t:'Senior Assessment Officer',          c:'#4a9fd5', role:'Assessing officer'},
+ nadine:{n:'Nadine Dowler',  t:'Team Leader, Statutory Planning',    c:'#3f51b5', corr:1, end:1, role:'Endorser'},
+ braden:{n:'Braden Simpson', t:'Manager, Development Assessment',    c:'#2e9e5b', corr:1, end:1, role:'Endorser'},
+ helen: {n:'Helen Ashby',    t:'Executive Planner',                  c:'#8a6d00', corr:1, end:1},
+ marcus:{n:'Marcus Reid',    t:'Senior Assessment Officer',          c:'#3a4a8a', corr:1},
+ kate:  {n:'Kate Morrison',  t:'Planning Administration Officer',    c:'#c0562e', adm:1, role:'Administration'},
+ tom:   {n:'Tom Ellis',      t:'Planning Administration Officer',    c:'#0f7f8c', adm:1},
+ anu:   {n:'Anu Ponugoti',   t:'Assessment Officer',                 c:'#b0413e'},
+ teille:{n:'Teille Whiteman',t:'Assessment Officer',                 c:'#3f7ba8'}
+};
+var PERSONAS=['sean','nadine','braden','kate'];
+function ini(n){return n.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();}
+function av(k,size){var u=U[k];return '<span class="av'+(size?' '+size:'')+'" style="background:'+u.c+'">'+ini(u.n)+'</span>';}
+function who(k){return k?'<span class="who">'+av(k)+'<span>'+U[k].n+'</span></span>':'<span class="dash">&mdash;</span>';}
+function nm(k){return U[k]?U[k].n:'';}
+function canCorr(k){return k===OFFICER? S.seanCorr : !!U[k].corr;}
+
+/* ---------- simulated clock: today is frozen at 08 Nov 2026 ---------- */
+var CLK={h:9,m:0};
+function now(){CLK.m+=7;if(CLK.m>=60){CLK.h++;CLK.m-=60;}var h=CLK.h>12?CLK.h-12:CLK.h;
+  return '08 Nov 2026, '+h+':'+(CLK.m<10?'0':'')+CLK.m+(CLK.h>=12?' PM':' AM');}
+function today(){return '08 Nov 2026';}
+
+/* ---------- correspondence templates ----------
+   Professional Services configures this list and its default text per
+   council. A template fixes the TYPE: a request needs a response, a
+   notice does not. */
+var TPL={
+ rfi:{name:'RFI letter',short:'RFI',kind:'request',doc:'Request for Information',
+  intro:['Council is committed to working with you to progress this application. A preliminary review of your development application has been completed, and the following matters need to be resolved, or additional information provided, before a detailed assessment can be undertaken.',
+         'Please carefully review the items listed below and respond within the timeframe set out at the end of this letter.'],
+  outro:['To progress your application, please submit amended plans and/or additional information addressing all of the matters listed above via the NSW Planning Portal.',
+         'Your response is required by 22 November 2026. If the requested information is not received by this date, Council will proceed to assess and determine the application based on the information already submitted, which may result in the application being refused.',
+         'Please ensure your response represents a genuine attempt to address all of the matters raised. Council generally will not seek further information after this point.',
+         'Alternatively, you may choose to withdraw this application. Please contact your assessment officer to discuss this option.']},
+ ret:{name:'Return letter',short:'Return',kind:'notice',doc:'Return of Development Application',
+  intro:['Council has completed a preliminary review of your development application. The application does not contain the information Council needs to undertake an assessment and is being returned to you.',
+         'The matters that led to this decision are listed below.'],
+  outro:['This notice does not require a response. No further assessment of this application will be undertaken.',
+         'If you wish to proceed, please lodge a new development application via the NSW Planning Portal that addresses all of the matters listed above. Any refund of fees will be processed in accordance with Council’s Fees and Charges.',
+         'If you would like to discuss this notice, please contact the officer named below.']}
+};
+var TPL_ORDER=['rfi','ret'];
+
+var ISSUES=[
+ {h:'Setbacks and Storeys',by:'sean',at:'09 Oct 2026, 3:18 PM',b:['Prescriptive measure (b) of Part 3.1.2 &ndash; Setbacks of the DCP states <i>&ldquo;for the purpose of the setback controls, a 1 storey building or element is not to exceed a building height of 4.5 metres above existing ground level.&rdquo;</i>','The proposed addition, being a single storey, would have a height of over 4.5m and therefore does not meet minimum setback requirements. You are required to provide amended plans which may involve increasing the side setback and reducing the height of the single storey element.']},
+ {h:'Plan Details',by:'anu',at:'09 Oct 2026, 3:21 PM',b:['The submitted plans contain missing or inconsistent details. The elevations and sections are missing some floor, ceiling and roof levels; the levels shown on the elevations and sections are inconsistent; and the elevations and sections do not contain any dimensions.']},
+ {h:'Responding to Topography',by:'sean',at:'09 Oct 2026, 3:21 PM',b:['Prescriptive measure (b) of Part 3.1.1 &ndash; Scale of the DCP states that <i>&ldquo;buildings should respond to the topography of the site by siting the floor level of the lowest residential storey a maximum of 1.5 metres above natural ground level.&rdquo;</i>','You are required to provide an amended design which lowers the floor level of the proposed addition to minimise the height and bulk of the structure.']},
+ {h:'Cut and Fill Plan',by:'anu',at:'09 Oct 2026, 3:26 PM',b:['The proposal involves cut and fill. You are required to provide a cut and fill plan showing areas of proposed cut and fill, the extent of levels, proposed finished ground levels and top and bottom of wall RLs for all proposed retaining walls.']},
+ {h:'Streetscape',by:'anu',at:'09 Oct 2026, 3:26 PM',b:['Prescriptive measure (c) of Part 3.1.8 &ndash; Design Details of the DCP states that <i>&ldquo;extensive blank or unarticulated walls to street frontages are discouraged.&rdquo;</i> The proposed addition would not improve this outcome. You are required to address this prescriptive measure.']},
+ {h:'Stormwater',by:'anu',at:'09 Oct 2026, 3:27 PM',b:['The submitted concept stormwater plan indicates drainage via a concrete headwall. This is not supported. Stormwater must be disposed of with an absorption trench located a minimum of 5 metres from any downstream property and 1 metre from the side boundaries.']},
+ {h:'Garage Setback',by:'sean',at:'09 Oct 2026, 3:28 PM',b:['Prescriptive measure (f) of Part 3.1.6 &ndash; Design Details of the DCP states that garage doors should be set back 1 metre from the front fa&ccedil;ade of the home. You are required to provide amended plans increasing the setback of the garage to ensure a minimum 1m setback from the front fa&ccedil;ade.']},
+ {h:'Streetscape',by:'sean',at:'09 Oct 2026, 3:29 PM',b:['Prescriptive measure (c) of Part 3.1.8 &ndash; Design Details of the DCP states that <i>&ldquo;extensive blank or unarticulated walls to street frontages are discouraged.&rdquo;</i> It is acknowledged that the current dwelling has a solid blank wall to the street which is not proposed to be altered. You are required to address this prescriptive measure.']},
+ {h:'Tree Preservation',by:'sean',at:'09 Oct 2026, 3:43 PM',b:['The proposed garage would encroach towards the trunks of numerous trees in the corner of the site. You are required to provide an Arboricultural Impact Assessment and Tree Protection Plan prepared by an AQF Level 5 Arborist.']},
+ {h:'Fencing and Landscaping',by:'sean',at:'09 Oct 2026, 3:52 PM',b:['The proposal includes a 1.2m high fence at the front boundary. It is unclear how this fence will be positioned and its impact on the streetscape. You are required to provide amended plans and a streetscape elevation showing the proposal with and without the fencing.']}
+];
+function clone(o){return JSON.parse(JSON.stringify(o));}
+
+var APP={id:'DA303165',pan:'PAN-212610095',addr:'54 Kurraba Road, Neutral Bay NSW 2089',lot:'Lot 12 DP 15562',
+  desc:'Alterations and additions to an existing dwelling house',edc:'AU$277,749',
+  applicant:'Waylon (Sasha) Ferry',phone:'+61 434 635 598',email:'waylon.ferry@example.com',submitted:'09 Oct 2026',lodged:'10 Oct 2026',age:30};
+
+var REASONS='The application has been assessed against the matters for consideration under section 4.15 of the Environmental Planning and Assessment Act 1979. Amended plans received 4 November 2026 resolve the setback, topography and garage matters raised in RFI letter 1. Subject to the recommended conditions, the proposal is consistent with the objectives of the R2 Low Density Residential zone and is recommended for approval.';
+
+var REC_TO_DET={Approval:'Approved','Deferred commencement':'Approved - deferred commencement',Refusal:'Refused'};
+var AUTH={delegated:'Under delegated authority',lpp_local:'Local planning panel - local',lpp_rs:'Local planning panel - regionally significant',lpp_del:'Under authority delegated by the LPP'};
+var AUTH_NOD={delegated:'Under delegated authority',lpp_local:'North Sydney Local Planning Panel',lpp_rs:'North Sydney Local Planning Panel (regionally significant)',lpp_del:'Under authority delegated by the North Sydney Local Planning Panel'};
+function isLpp(a){return a==='lpp_local'||a==='lpp_rs';}
+
+/* ---------- state ---------- */
+function newCorr(tpl,issues,created){
+  return {tpl:tpl,status:'draft',issues:issues,intro:TPL[tpl].intro.slice(),outro:TPL[tpl].outro.slice(),
+          endorser:null,endorsedBy:null,returnNote:null,closing:null,sentAt:null,created:created,log:[]};
+}
+function base(){
+  return {
+    me:'sean',screen:'dash',dashTab:'active',appsTab:'active',aTab:'rec',
+    seanCorr:false,prereq:true,
+    corr:[newCorr('rfi',clone(ISSUES),'09 Oct 2026, 3:18 PM')],
+    sel:0,edit:null,
+    rec:{authority:'delegated',rec:'Approval',duration:5,reasons:REASONS,
+         endorsers:[],signatory:null,finaliser:'sean',
+         phase:'draft',cur:0,returned:false,firstSent:null,log:[],reviewEdits:{},
+         lppDate:'',lppRef:'',detDate:'08 Nov 2026',det:null,lastSent:null,prepDate:null,exec:null,finalisedBy:null,finalisedAt:null},
+    done:{nadine:[],braden:[],helen:[],kate:[]},
+    shut:{}
+  };
+}
+var S=base();
+
+function corrName(i){var c=S.corr[i];return TPL[c.tpl].name+' '+(i+1);}
+function corrShort(i){var c=S.corr[i];return TPL[c.tpl].short+' '+(i+1);}
+function lg(arr,who,what,note){arr.push({at:now(),who:who,what:what,note:note||''});}
+
+/* ---------- scenario presets (concept control) ---------- */
+var PRESETS=[
+ {k:'start',  t:'1 · Correspondence draft — Sean has no authority to correspond'},
+ {k:'corrReq',t:'2 · Authorisation requested — Nadine to review'},
+ {k:'corrSent',t:'3 · RFI letter sent — awaiting response, ready to close'},
+ {k:'ready',  t:'4 · Recommendation made — ready to request endorsement'},
+ {k:'rev1',   t:'5 · Endorsement requested — with Nadine (1 of 2)'},
+ {k:'end1',   t:'6 · Endorsed 1 of 2 — auto-routed to Braden'},
+ {k:'ret',    t:'7 · Returned by Braden — Sean edits and resumes'},
+ {k:'fin',    t:'8 · All endorsed — Kate to finalise'},
+ {k:'det',    t:'9 · Determination finalised'}
+];
+function fixedLog(at,who,what,note){return {at:at,who:who,what:what,note:note||''};}
+function preset(k){
+  S=base(); CLK={h:9,m:0};
+  var c=S.corr[0], R=S.rec;
+  var steps=['start','corrReq','corrSent','ready','rev1','end1','ret','fin','det'];
+  var n=steps.indexOf(k);
+  if(n>=1){
+    c.status='awaiting'; c.endorser='nadine';
+    c.log.push(fixedLog('20 Oct 2026, 9:12 AM','sean','Requested authorisation from <b>Nadine Dowler</b>','Ten issues. The two Streetscape items may overlap — happy for you to merge.'));
+  }
+  if(n>=2){
+    c.issues.splice(7,1);
+    c.status='awaiting_response'; c.endorsedBy='nadine'; c.sentAt='21 Oct 2026, 2:15 PM';
+    c.log.push(fixedLog('20 Oct 2026, 11:02 AM','nadine','Started review'));
+    c.log.push(fixedLog('20 Oct 2026, 11:31 AM','nadine','Removed issue <b>Streetscape</b> (duplicate)'));
+    c.log.push(fixedLog('20 Oct 2026, 11:40 AM','nadine','<b>Endorsed</b>','Removed the duplicate Streetscape item. Good to go.'));
+    c.log.push(fixedLog('21 Oct 2026, 2:15 PM','sean','Marked sent'));
+    S.done.nadine.push({type:'Correspondence',label:'RFI letter 1',dec:'Endorsed',at:'20 Oct 2026'});
+  }
+  if(n>=3){
+    c.status='closed';
+    c.closing={by:'sean',at:'06 Nov 2026, 3:40 PM',note:'Amended plans received 4 Nov. Side setback increased to 1.5m and the floor level lowered by 600mm — setbacks, topography and garage matters resolved. Arborist report accepted; tree protection to be conditioned. Streetscape elevation for the front fence provided and acceptable.'};
+    c.log.push(fixedLog('06 Nov 2026, 3:40 PM','sean','Closed RFI letter 1 — 9 issues recorded as closed'));
+  }
+  if(n>=4){
+    R.endorsers=[{u:'nadine',st:'notstarted',at:null,note:''},{u:'braden',st:'queued',at:null,note:''}];
+    R.signatory='nadine'; R.finaliser='kate'; R.phase='review'; R.cur=0; R.firstSent='07 Nov 2026, 4:12 PM'; R.lastSent=R.firstSent;
+    R.log.push(fixedLog('07 Nov 2026, 4:12 PM','sean','Requested endorsement — <b>Nadine Dowler</b>, then <b>Braden Simpson</b>. NoD signatory: Nadine Dowler. Finalising: Kate Morrison.'));
+  }
+  if(n>=5){
+    R.endorsers[0]={u:'nadine',st:'endorsed',at:'08 Nov 2026, 8:20 AM',note:'Endorsed. I corrected the frontage value in condition 7 to 15.24m before endorsing.'};
+    R.endorsers[1].st='notstarted'; R.cur=1; R.prepDate='07 Nov 2026';
+    R.log.push(fixedLog('08 Nov 2026, 8:02 AM','nadine','Started review'));
+    R.log.push(fixedLog('08 Nov 2026, 8:17 AM','nadine','Edited <b>condition 7</b> (frontage value)'));
+    R.log.push(fixedLog('08 Nov 2026, 8:20 AM','nadine','<b>Endorsed</b> — sent automatically to Braden Simpson (2 of 2)','Endorsed. I corrected the frontage value in condition 7 to 15.24m before endorsing.'));
+    S.done.nadine.push({type:'Recommendation',label:'Recommendation',dec:'Endorsed',at:'08 Nov 2026'});
+  }
+  if(n===6){
+    R.endorsers[1]={u:'braden',st:'returned',at:'08 Nov 2026, 8:55 AM',note:'Please address the streetscape impact of the front fence in the executive summary before I endorse.'};
+    R.phase='draft'; R.returned=true;
+    R.log.push(fixedLog('08 Nov 2026, 8:41 AM','braden','Started review'));
+    R.log.push(fixedLog('08 Nov 2026, 8:55 AM','braden','<b>Returned</b>','Please address the streetscape impact of the front fence in the executive summary before I endorse.'));
+    S.done.braden.push({type:'Recommendation',label:'Recommendation',dec:'Returned',at:'08 Nov 2026'});
+  }
+  if(n>=7){
+    R.endorsers[1]={u:'braden',st:'endorsed',at:'08 Nov 2026, 9:05 AM',note:''};
+    R.log.push(fixedLog('08 Nov 2026, 8:41 AM','braden','Started review'));
+    R.log.push(fixedLog('08 Nov 2026, 9:05 AM','braden','<b>Endorsed</b> — all endorsers have endorsed. Sent to Kate Morrison to finalise.'));
+    S.done.braden.push({type:'Recommendation',label:'Recommendation',dec:'Endorsed',at:'08 Nov 2026'});
+    enterFinalise();
+  }
+  if(n>=8){
+    R.phase='determined'; R.finalisedBy='kate'; R.finalisedAt='08 Nov 2026, 10:30 AM';
+    R.log.push(fixedLog('08 Nov 2026, 10:30 AM','kate','<b>Finalised determination</b> — Approved, under delegated authority'));
+    S.done.kate.push({type:'Finalise',label:'Determination',dec:'Finalised',at:'08 Nov 2026'});
+  }
+  var land={start:['sean','corr'],corrReq:['nadine','dash','review'],corrSent:['sean','corr'],ready:['sean','assess'],
+            rev1:['nadine','dash','review'],end1:['braden','dash','review'],ret:['sean','assess'],fin:['kate','dash','active'],det:['sean','ov']}[k];
+  S.me=land[0]; S.screen=land[1]; if(land[2]) S.dashTab=land[2];
+  if(k==='det') S.aTab='det';
+}
+function enterFinalise(){
+  var R=S.rec; R.phase='finalise';
+  R.det={determination:REC_TO_DET[R.rec],authority:R.authority,reasons:R.reasons};
+  S.aTab=(S.me===R.finaliser)?'det':'rec';
+}
+function addYears(d,y){var p=d.split(' ');return p[0]+' '+p[1]+' '+(+p[2]+(+y));}
+
+/* ---------- derived: recommendation status ----------
+   Not started > In progress > Made > Under review (b/y) > Endorsed (a/y) > Finalise.
+   Under review = the request is with endorser b. Endorsed (a/y) = a endorsers
+   have endorsed and the next has not yet started reviewing. Suffix " LPP" when
+   the determining authority is a local planning panel. */
+function endCount(){return S.rec.endorsers.filter(function(e){return e.st==='endorsed';}).length;}
+function recStatus(){
+  var R=S.rec, y=R.endorsers.length, auth=(R.phase==='finalise'&&R.det)?R.det.authority:R.authority, l=isLpp(auth)?' LPP':'';
+  if(R.phase==='determined') return {k:'det',label:'Determined'+l};
+  if(R.phase==='finalise')   return {k:'fin',label:'Finalise'+l};
+  if(R.phase==='review'){
+    var e=R.endorsers[R.cur], a=endCount();
+    if(e.st==='review'||a===0) return {k:'rev',label:'Under review ('+(R.cur+1)+'/'+y+')'+l};
+    return {k:'end',label:'Endorsed ('+a+'/'+y+')'+l};
+  }
+  if(R.returned) return {k:'ip',label:'In progress'+l};
+  if(R.rec)      return {k:'made',label:'Made'+l};
+  return {k:'ip',label:'In progress'+l};
+}
+var RS={ns:['c-neutral',''],ip:['c-prog',I.play],made:['c-made',''],rev:['c-rev',I.eye],end:['c-end',I.tick],fin:['c-fin',I.bolt],det:['c-det',I.tick]};
+function recChip(st,grey,big){var m=RS[st.k];return '<span class="chip '+m[0]+(grey&&st.k!=='fin'?' g':'')+(big?' big':'')+'"'+(st.tip?' data-tip="'+st.tip+'"':'')+'>'+m[1]+st.label+'</span>';}
+
+/* ---------- derived: correspondence status ---------- */
+var CS={
+ draft:['Draft','c-draft',I.pen],
+ awaiting:['Awaiting authorisation','c-await',I.clock],
+ review:['Under review','c-rev',I.eye],
+ returned:['Returned','c-ret',I.ret],
+ endorsed:['Endorsed · not sent','c-end',I.tick],
+ awaiting_response:['Awaiting response','c-prog',I.play],
+ sent:['Sent','c-done',I.tick],
+ closed:['Closed','c-done',I.tick]
+};
+function corrChip(st,grey,prefix){var m=CS[st];return '<span class="chip '+m[1]+(grey?' g':'')+'">'+m[2]+(prefix?prefix+' · ':'')+m[0]+'</span>';}
+function corrIsClosed(c){return c.status==='closed'||c.status==='sent';}
+function kindChip(tpl){return TPL[tpl].kind==='request'?'<span class="chip c-req">Request &middot; response required</span>':'<span class="chip c-not">Notice &middot; no response required</span>';}
+
+/* generic chip */
+function ch(txt,cls,ic,grey){if(!txt) return '<span class="dash">&mdash;</span>';return '<span class="chip '+cls+(grey?' g':'')+'">'+(ic||'')+txt+'</span>';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ---------- tooltip ---------- */
+var ttEl=document.getElementById('tt');
+document.addEventListener('mouseover',function(e){
+  var el=e.target.closest('[data-tip]');
+  if(!el){ttEl.classList.remove('on');return;}
+  ttEl.innerHTML=el.getAttribute('data-tip'); ttEl.classList.add('on');
+  var b=el.getBoundingClientRect(),h=ttEl.offsetHeight,w=ttEl.offsetWidth;
+  var top=b.bottom+8; if(top+h>window.innerHeight-10) top=Math.max(10,b.top-h-8);
+  var left=b.left; if(left+w>window.innerWidth-14) left=window.innerWidth-w-14;
+  ttEl.style.top=top+'px'; ttEl.style.left=left+'px';
+});
+var TQ=null;
+function toast(h){var t=document.getElementById('toast');t.innerHTML=I.tick+'<span>'+h+'</span>';t.classList.add('on');
+  clearTimeout(TQ);TQ=setTimeout(function(){t.classList.remove('on');},4200);}
+
+/* ============================================================
+   FIXTURES — static rows around the live record
+   ============================================================ */
+function F(id,age,addr,officer,team,refs,comp,corr,rec,extra){var o={id:id,age:age,addr:addr,officer:officer,team:team,refs:refs,comp:comp,corr:corr,rec:rec};if(extra)for(var k in extra)o[k]=extra[k];return o;}
+var P=function(t){return [t,'prog'];}, D=function(t){return [t,'done'];}, N=function(t){return [t,'ns'];};
+var R_=function(k,l){return {k:k,label:l};};
+var FX={
+ DA247759:F('DA247759',29,'69 Holt Avenue, Cremorne NSW 2090','sean','Statutory Planning',P('In progress (0/2)'),P('In progress 15/18'),['RFI 1','draft'],R_('ip','In progress')),
+ DA382110:F('DA382110',29,'190 Military Road, Neutral Bay NSW 2089','sean','Statutory Planning',P('In progress (1/3)'),P('In progress 15/18'),null,R_('ip','In progress')),
+ DA871361:F('DA871361',29,'12 Blues Point Road, McMahons Point NSW 2060','sean','Statutory Planning',P('In progress (0/2)'),P('In progress 4/15'),['RFI 1','awaiting_response'],R_('ip','In progress')),
+ DA075394:F('DA075394',28,'9 Alfred Street, Milsons Point NSW 2061','sean','Statutory Planning',N('Not started (3)'),null,['Return 1','sent'],R_('ns','Not started')),
+ DA233699:F('DA233699',29,'102 Ben Boyd Road, Neutral Bay NSW 2089','sean','Planning Team West',D('Completed (3/3)'),D('Assessed 28/28'),['RFI 1','closed'],R_('rev','Under review (1/1) LPP')),
+ DA522398:F('DA522398',28,'230 Kurraba Road, Neutral Bay NSW 2089','sean','Planning Team West',D('Completed (3/3)'),D('Assessed 23/23'),['RFI 1','closed'],R_('fin','Finalise')),
+ DA169262:F('DA169262',28,'66 Bay Road, Waverton NSW 2060','sean','Planning Team West',D('Completed (5/5)'),D('Assessed 23/23'),['RFI 2','closed'],R_('end','Endorsed (1/2)')),
+ DA489831:F('DA489831',25,'188 West Street, Crows Nest NSW 2065','sean','Planning Team West',P('In progress (1/6)'),P('In progress 17/21'),['RFI 2','awaiting'],R_('made','Made')),
+ DA937591:F('DA937591',18,'283 Military Road, Cremorne NSW 2090',null,'Statutory Planning',null,null,null,R_('ns','Not started')),
+ DA644748:F('DA644748',23,'122 Falcon Street, Crows Nest NSW 2065',null,'Planning Team East',P('In progress (0/3)'),null,['RFI 1','draft'],R_('ns','Not started')),
+ DA672822:F('DA672822',23,'258 Miller Street, North Sydney NSW 2060','teille','Planning Team East',P('In progress (1/5)'),P('In progress 3/23'),['RFI 1','draft'],R_('made','Made LPP')),
+ DA385778:F('DA385778',26,'168 Union Street, McMahons Point NSW 2060','anu','Statutory Planning',N('Not started (3)'),P('In progress 0/18'),['RFI 1','draft'],R_('ip','In progress')),
+ DA588120:F('DA588120',27,'41 Ernest Street, Crows Nest NSW 2065','teille','Planning Team West',D('Completed (4/4)'),D('Assessed 31/31'),['RFI 1','closed'],R_('fin','Finalise LPP'),{fin:'kate'}),
+ DA641902:F('DA641902',29,'8 Shirley Road, Wollstonecraft NSW 2065','marcus','Planning Team East',D('Completed (2/2)'),D('Assessed 15/15'),['RFI 1','closed'],R_('fin','Finalise'),{fin:'kate'}),
+ DA612045:F('DA612045',27,'27 Rangers Road, Cremorne NSW 2090','marcus','Statutory Planning',D('Completed (3/3)'),D('Assessed 20/20'),['RFI 1','closed'],R_('rev','Under review (1/2)'),{fin:'kate'}),
+ DA455118:F('DA455118',29,'3 Spofforth Street, Cremorne NSW 2090','anu','Planning Team East',D('Completed (4/4)'),D('Assessed 23/23'),['Return 1','sent'],R_('ip','In progress')),
+ DA170233:F('DA170233',27,'14 Waters Road, Cremorne NSW 2090','teille','Planning Team West',P('In progress (2/3)'),P('In progress 12/18'),['RFI 1','awaiting_response'],R_('ip','In progress'))
+};
+var DASH={
+ sean:[{g:'Statutory Planning',ids:['DA247759','DA382110','DA871361','HERO','DA075394']},
+       {g:'Planning Team West',ids:['DA233699','DA522398','DA169262','DA489831']}],
+ nadine:[{g:'Statutory Planning',ids:['DA612045','DA385778','DA937591']}],
+ braden:[{g:'Planning Team East',ids:['DA672822','DA644748','DA641902']}],
+ kate:[{g:'Assessment administration — assigned to me to finalise',ids:['DA588120','DA641902','HERO','DA612045'],showOfficer:true}]
+};
+var ALL_IDS=['DA937591','DA247759','DA382110','DA644748','DA672822','DA385778','HERO','DA871361','DA075394','DA233699','DA522398','DA169262','DA489831','DA588120','DA641902','DA612045','DA455118','DA170233'];
+var REVIEW_FX={
+ nadine:[{req:'07 Nov 2026',age:'1 day',type:'Correspondence',label:'RFI letter 2',id:'DA489831',by:'sean',st:'Not started'},
+         {req:'05 Nov 2026',age:'3 days',type:'Recommendation',label:'Recommendation (1 of 2)',id:'DA612045',by:'marcus',st:'Under review'}],
+ braden:[{req:'06 Nov 2026',age:'2 days',type:'Recommendation',label:'Recommendation (2 of 2)',id:'DA169262',by:'sean',st:'Not started'}],
+ sean:[],kate:[]
+};
+var DONE_FX={
+ nadine:[{type:'Correspondence',label:'RFI letter 1',id:'DA170233',by:'teille',dec:'Endorsed',at:'05 Nov 2026'},
+         {type:'Recommendation',label:'Recommendation',id:'DA455118',by:'anu',dec:'Returned',at:'04 Nov 2026'}],
+ braden:[{type:'Recommendation',label:'Recommendation',id:'DA233699',by:'sean',dec:'Endorsed',at:'03 Nov 2026'}],
+ sean:[],kate:[]
+};
+
+/* ---------- cell helpers ---------- */
+function stat(a,grey){if(!a) return '<span class="dash">&mdash;</span>';var m={prog:['c-prog',I.play],done:['c-done',I.tick],ns:['c-neutral','']}[a[1]];return ch(a[0],m[0],m[1],grey);}
+function heroFx(){
+  var last=S.corr.length-1, pre=S.prereq;
+  return {id:APP.id,age:APP.age,addr:APP.addr,officer:'sean',team:'Statutory Planning',hero:true,
+    refs:pre?D('Completed (4/4)'):P('In progress (2/4)'),comp:pre?D('Assessed 23/23'):P('In progress 18/23'),
+    corrH:function(g){return corrChip(S.corr[last].status,g,corrShort(last));},rec:recStatus(),fin:S.rec.finaliser};
+}
+function fx(id){return id==='HERO'?heroFx():FX[id];}
+function corrCell(f,g){return f.hero?f.corrH(g):(f.corr?corrChip(f.corr[1],g,f.corr[0]):'<span class="dash">&mdash;</span>');}
+function finTip(f){ if(f.rec.k!=='fin') return f.rec; var o={k:'fin',label:f.rec.label,tip:'<b>Ready to finalise</b>All endorsers have endorsed. Finalising: '+nm(f.fin||'sean')}; return o;}
+var CHG_CORR={t:'Correspondence',tip:'<b>Renamed from RFI Letter</b>Shows the latest piece of correspondence, named from its template.'};
+var CHG_REC={t:'Recommendation',tip:'<b>Renamed from Determination</b>Recommendation status. Appends LPP when a local planning panel determines. Finalise turns urgent and greys the other chips in the row.'};
+function TH(cols){return '<thead><tr>'+cols.map(function(c){
+  if(typeof c==='object') return '<th class="chg" data-tip="'+c.tip+'">'+c.t+' &#9670;</th>';
+  return '<th>'+c+'</th>';}).join('')+'</tr></thead>';}
+var BAR='<div class="tbar">'+I.search+I.filter+'</div>';
+function rowAttrs(f){return f.hero?' class="click hero" data-open="ov"':' class="click" data-static="'+f.id+'"';}
+
+/* ============================================================
+   SCREEN — DASHBOARD
+   Tabs: Admin | Active | Review (was Determine) | Completed
+   ============================================================ */
+function reviewRows(me){
+  var rows=REVIEW_FX[me].map(function(r){return {r:r,hero:false};});
+  var c, i;
+  for(i=0;i<S.corr.length;i++){ c=S.corr[i];
+    if(c.endorser===me && (c.status==='awaiting'||c.status==='review')){
+      var req=null; c.log.forEach(function(l){ if(/Requested authorisation/.test(l.what)) req=l.at; });
+      rows.unshift({hero:true,go:'corr',sel:i,r:{req:req?req.split(',')[0]:today(),age:req&&req.indexOf('08 Nov')<0?'19 days':'0 days',type:'Correspondence',label:corrName(i),id:APP.id,by:OFFICER,
+        st:c.status==='awaiting'?'Not started':'Under review'}});
+    }
+  }
+  var R=S.rec;
+  if(R.phase==='review' && R.endorsers[R.cur].u===me){
+    var e=R.endorsers[R.cur];
+    rows.unshift({hero:true,go:'assess',r:{req:R.cur===0?(R.firstSent||today()).split(',')[0]:today(),age:R.cur===0&&R.firstSent&&R.firstSent.indexOf('07 Nov')===0?'1 day':'0 days',
+      type:'Recommendation',label:'Recommendation ('+(R.cur+1)+' of '+R.endorsers.length+')',id:APP.id,by:OFFICER,st:e.st==='review'?'Under review':'Not started'}});
+  }
+  return rows;
+}
+function typeChip(t){return t==='Correspondence'?ch(t,'c-type-corr'):t==='Recommendation'?ch(t,'c-type-rec'):ch(t,'c-neutral');}
+function reqStChip(s){return s==='Under review'?ch(s,'c-rev',I.eye):ch(s,'c-neutral');}
+function decChip(d){return d==='Endorsed'?ch(d,'c-end',I.tick):d==='Returned'?ch(d,'c-ret',I.ret):ch(d,'c-det',I.tick);}
+
+function renderDash(){
+  var me=S.me, tab=S.dashTab;
+  var groups=DASH[me].map(function(g){
+    var ids=g.ids.filter(function(id){
+      if(id!=='HERO') return true;
+      if(S.rec.phase==='determined') return false;
+      if(me==='kate') return S.rec.finaliser==='kate';
+      return true;});
+    return {g:g.g,ids:ids,showOfficer:g.showOfficer};
+  });
+  var activeCount=0; groups.forEach(function(g){activeCount+=g.ids.length;});
+  var rv=reviewRows(me);
+  var donePersona=(S.done[me]||[]).map(function(d){var o=clone(d);o.id=APP.id;o.by=OFFICER;o.hero=true;return o;});
+  var done=donePersona.concat(DONE_FX[me]);
+  var showReview = (me!=='kate');
+
+  var tabs='<div class="tabs">'+
+    '<button class="tab'+(tab==='admin'?' on':'')+'" data-dtab="admin">Admin (2)</button>'+
+    '<button class="tab'+(tab==='active'?' on':'')+'" data-dtab="active">Active ('+activeCount+')</button>'+
+    (showReview?'<button class="tab'+(tab==='review'?' on':'')+'" data-dtab="review" data-tip="<b>Renamed from Determine</b>Every request for your sign off: correspondence authorisations and recommendation endorsements.">Review'+(rv.length?' ('+rv.length+')':'')+
+      (rv.some(function(x){return x.hero;})?'<span class="new"></span>':'')+'</button>':'')+
+    '<button class="tab'+(tab==='completed'?' on':'')+'" data-dtab="completed">Completed</button></div>';
+
+  var body='';
+  if(tab==='active'){
+    body=groups.map(function(g){
+      var cols=['Age','Application','Address'].concat(g.showOfficer?['Assessing officer']:[]).concat(['Application type','Development type','Referrals','Compliance',CHG_CORR,CHG_REC]);
+      var rows=g.ids.map(function(id){
+        var f=fx(id), grey=(f.rec.k==='fin');
+        return '<tr'+rowAttrs(f)+'><td><span class="age">'+f.age+' days</span></td><td><span class="appid">'+f.id+I.copy+'</span></td><td>'+f.addr+'</td>'+
+          (g.showOfficer?'<td>'+who(f.officer)+'</td>':'')+
+          '<td>Development application</td><td>Residential</td><td>'+stat(f.refs,grey)+'</td><td>'+stat(f.comp,grey)+'</td>'+
+          '<td>'+corrCell(f,grey)+'</td><td>'+recChip(finTip(f),grey)+'</td></tr>';
+      }).join('');
+      return '<div class="grp">'+I.chev+g.g+' <span class="cnt">('+g.ids.length+')</span></div>'+BAR+
+        '<table class="t">'+TH(cols)+'<tbody>'+(rows||'<tr><td colspan="10" class="empty-row">Nothing assigned.</td></tr>')+'</tbody></table>';
+    }).join('');
+  } else if(tab==='review'){
+    if(!showReview){ body='<div class="empty-row">Administration officers do not endorse. Finalise requests arrive in the Active tab.</div>'; }
+    else {
+      var rrows=rv.map(function(x){var r=x.r;
+        return '<tr class="click'+(x.hero?' hero':'')+'" '+(x.hero?'data-open="'+x.go+'"'+(x.sel!==undefined?' data-sel="'+x.sel+'"':''):'data-static="'+r.id+'"')+'>'+
+          '<td class="mono">'+r.req+'</td><td><span class="age">'+r.age+'</span></td><td>'+typeChip(r.type)+'</td><td>'+r.label+'</td>'+
+          '<td><span class="appid">'+r.id+I.copy+'</span></td><td>'+(x.hero?APP.addr:FX[r.id].addr)+'</td><td>'+who(r.by)+'</td><td>'+reqStChip(r.st)+'</td></tr>';
+      }).join('');
+      body='<div class="grp">'+I.chev+'Requests for my sign off <span class="cnt">('+rv.length+')</span></div>'+BAR+
+        '<table class="t">'+TH(['Requested','Age','Request type','Item','Application','Address','Requested by','Status'])+
+        '<tbody>'+(rrows||'<tr><td colspan="8" class="empty-row">No requests waiting for you.</td></tr>')+'</tbody></table>';
+    }
+  } else if(tab==='completed'){
+    var apps=[];
+    if(S.rec.phase==='determined' && (me==='sean'||me==='kate')) apps.push({id:APP.id,addr:APP.addr,det:'Approved',at:'08 Nov 2026',hero:true});
+    apps.push({id:'DA118204',addr:'31 Bay Road, Waverton NSW 2060',det:'Approved',at:'30 Oct 2026'});
+    var arows=apps.map(function(a){return '<tr class="click'+(a.hero?' hero':'')+'" '+(a.hero?'data-open="ov"':'data-static="'+a.id+'"')+'><td><span class="appid">'+a.id+I.copy+'</span></td><td>'+a.addr+'</td><td>'+ch(a.det,'c-det',I.tick)+'</td><td class="mono">'+a.at+'</td></tr>';}).join('');
+    body='<div class="grp">'+I.chev+'Applications <span class="cnt">('+apps.length+')</span></div>'+
+      '<table class="t">'+TH(['Application','Address','Determination','Determined'])+'<tbody>'+arows+'</tbody></table>';
+    if(showReview){
+      var drows=done.map(function(d){return '<tr class="click'+(d.hero?' hero':'')+'" '+(d.hero?'data-open="'+(d.type==='Correspondence'?'corr':'assess')+'"':'data-static="'+d.id+'"')+'><td class="mono">'+d.at+'</td><td>'+typeChip(d.type)+'</td><td>'+d.label+'</td><td><span class="appid">'+d.id+I.copy+'</span></td><td>'+(d.hero?APP.addr:FX[d.id].addr)+'</td><td>'+who(d.by)+'</td><td>'+decChip(d.dec)+'</td></tr>';}).join('');
+      body+='<div class="grp">'+I.chev+'Reviews <span class="cnt">('+done.length+')</span></div>'+
+        '<table class="t">'+TH(['Decided','Request type','Item','Application','Address','Requested by','My decision'])+'<tbody>'+(drows||'<tr><td colspan="7" class="empty-row">No completed reviews.</td></tr>')+'</tbody></table>';
+    }
+  } else {
+    body='<div class="grp">'+I.chev+'Lodgement check (7 days) <span class="cnt">(2)</span></div>'+
+      '<table class="t">'+TH(['Age','PAN ID','Application','Address','Application type','Development type'])+'<tbody>'+
+      '<tr><td><span class="age">3 days</span></td><td class="mono">PAN-22610137</td><td><span class="appid">DA087234'+I.copy+'</span></td><td>200 Blues Point Road, McMahons Point NSW 2060</td><td>Development application</td><td>Residential</td></tr>'+
+      '<tr><td><span class="age">1 day</span></td><td class="mono">PAN-22610181</td><td><span class="appid">DA087251'+I.copy+'</span></td><td>11 High Street, North Sydney NSW 2060</td><td>Development application</td><td>Residential</td></tr>'+
+      '</tbody></table>';
+  }
+  var greet=CLK.h<12?'Good morning':'Good afternoon';
+  document.getElementById('page').innerHTML='<div class="page-head"><div class="page-title">'+greet+' '+U[me].n.split(' ')[0]+'</div></div><div class="gap"></div>'+
+    '<div class="panel">'+tabs+body+'</div>';
+}
+
+/* ============================================================
+   SCREEN — ALL APPLICATIONS
+   ============================================================ */
+function renderApps(){
+  var tab=S.appsTab, body;
+  if(tab==='active'){
+    var rows=ALL_IDS.filter(function(id){return !(id==='HERO'&&S.rec.phase==='determined');}).map(function(id){
+      var f=fx(id), grey=(f.rec.k==='fin');
+      return '<tr'+rowAttrs(f)+'><td><span class="age">'+f.age+' days</span></td><td><span class="appid">'+f.id+I.copy+'</span></td><td>'+f.addr+'</td>'+
+        '<td>Residential</td><td>'+who(f.officer)+'</td><td>'+ch(f.team,'c-team')+'</td><td>'+stat(f.refs,grey)+'</td><td>'+stat(f.comp,grey)+'</td>'+
+        '<td>'+corrCell(f,grey)+'</td><td>'+recChip(finTip(f),grey)+'</td></tr>';
+    }).join('');
+    body=BAR+'<table class="t">'+TH(['Age &uarr;','Application','Address','Development type','Assessing officer','Team','Referrals','Compliance',CHG_CORR,CHG_REC])+'<tbody>'+rows+'</tbody></table>';
+  } else {
+    var crow=(S.rec.phase==='determined'?'<tr class="click hero" data-open="ov"><td><span class="appid">'+APP.id+I.copy+'</span></td><td>'+APP.addr+'</td><td>'+who('sean')+'</td><td>'+ch('Approved','c-det',I.tick)+'</td><td class="mono">08 Nov 2026</td></tr>':'')+
+      '<tr class="click" data-static="DA118204"><td><span class="appid">DA118204'+I.copy+'</span></td><td>31 Bay Road, Waverton NSW 2060</td><td>'+who('sean')+'</td><td>'+ch('Approved','c-det',I.tick)+'</td><td class="mono">30 Oct 2026</td></tr>';
+    body=BAR+'<table class="t">'+TH(['Application','Address','Assessing officer','Determination','Determined'])+'<tbody>'+crow+'</tbody></table>';
+  }
+  document.getElementById('page').innerHTML='<div class="page-title">Applications</div><div class="page-sub">Active applications from lodgement</div><div class="gap"></div>'+
+    '<div class="panel"><div class="tabs"><button class="tab'+(tab==='active'?' on':'')+'" data-atab2="active">Active</button><button class="tab'+(tab==='completed'?' on':'')+'" data-atab2="completed">Completed</button></div>'+body+'</div>';
+}
+
+/* ============================================================
+   SCREEN — APPLICATION OVERVIEW
+   ============================================================ */
+function kv(k,v){return '<div class="kv"><dt>'+k+'</dt><dd>'+v+'</dd></div>';}
+function lnk(t){return '<a href="#" onclick="return false">'+t+'</a>';}
+function renderOv(){
+  var R=S.rec, pre=S.prereq, st=recStatus();
+  var summary='<div class="ov-card"><div class="ov-head"><span class="ov-title">Application summary</span></div><div class="ov-body">'+
+    kv('Submitted',APP.submitted)+kv('PAN ID',APP.pan)+kv('Application',APP.id)+kv('Address',APP.addr)+kv('Application type','Development application')+
+    kv('Development type','Residential')+kv('EDC (ex GST)',APP.edc)+kv('Description',APP.desc)+kv('Applicant name',APP.applicant)+kv('Applicant phone',APP.phone)+'</div></div>';
+  var map='<div class="ov-card"><div class="ov-head"><span class="ov-title">Map preview</span></div><div class="ov-body"><div class="mapbox"><span class="lot">R2</span></div></div></div>';
+  var plan='<div class="ov-card"><div class="ov-head"><span class="ov-title">Planning summary</span></div><div class="ov-body">'+
+    kv('LEP',lnk('North Sydney Local Environmental Plan 2013'))+kv('Land zoning',lnk('R2: Low Density Residential'))+kv('Height of building',lnk('8.5 m'))+
+    kv('Floor space ratio','Not applicable')+kv('Heritage','Not affected')+kv('Acid Sulfate Soils',lnk('Class 5'))+kv('Regional plan boundary','Greater Sydney')+'</div></div>';
+  var comp='<div class="ov-card"><div class="ov-head"><span class="ov-title">Compliance checklist</span></div><div class="ov-body">'+
+    '<div class="hint">Use a checklist to assess this application against compliance requirements</div>'+
+    kv('Checklist','DA &mdash; Dwelling house alterations')+kv('Progress',pre?ch('Assessed 23/23','c-done',I.tick):ch('In progress 18/23','c-prog',I.play))+
+    '<button class="btn-out btn-wide">View checklist</button></div></div>';
+  var refs=[['Engineering','James Calloway'],['Heritage Team','Leo Singh'],['Traffic Services','James Islam'],['Tree Services','David Bascope']];
+  var refT='<table class="mini"><thead><tr><th>Team</th><th>Assigned</th><th>Age</th><th>Status</th></tr></thead><tbody>'+refs.map(function(r,i){
+    var done=pre||i%2===0;return '<tr><td style="color:var(--ink);font-weight:500">'+r[0]+'</td><td>'+r[1]+'</td><td>29 days</td><td>'+(done?ch('Complete','c-done',I.tick):ch('In progress','c-prog',I.play))+'</td></tr>';}).join('')+'</tbody></table>';
+  var ref='<div class="ov-card"><div class="ov-head"><span class="ov-title">Referrals (4)</span><button class="btn-out">'+I.send+'Refer</button></div><div class="ov-body">'+refT+'<button class="btn-out btn-wide">View all referrals</button></div></div>';
+  var docs='<div class="ov-card"><div class="ov-head"><span class="ov-title">Portal documents (9)</span></div><div class="ov-body">'+
+    ['BASIX Form.pdf','Structural Design Drawings.pdf','Architectural Plans 2.pdf','Amended Plans 04-11-2026.pdf','Statement of Environmental Effects.pdf'].map(function(d){return '<div class="doc"><span class="pdf">PDF</span>'+d+'</div>';}).join('')+
+    '<button class="btn-out btn-wide">View all documents</button></div></div>';
+  var cond='<div class="ov-card"><div class="ov-head"><span class="ov-title">Conditions (12)</span></div><div class="ov-body">'+
+    kv('Placeholders',pre?ch('12/12 populated','c-done',I.tick):ch('10/12 populated','c-prog',I.play))+'<button class="btn-out btn-wide">View all conditions</button></div></div>';
+
+  var crows=S.corr.map(function(c,i){return '<tr class="click" data-open="corr" data-sel="'+i+'" style="cursor:pointer"><td style="color:var(--ink);font-weight:500">'+corrName(i)+'</td><td>'+(TPL[c.tpl].kind==='request'?'Request':'Notice')+'</td><td>'+c.issues.length+'</td><td>'+corrChip(c.status)+'</td></tr>';}).join('');
+  var corr='<div class="ov-card focus"><span class="focus-tag">Changed</span><div class="ov-head"><span class="ov-title">Correspondence ('+S.corr.length+')</span>'+
+    '<button class="btn-out" data-open="corr">'+I.plus+'Add issue</button></div><div class="ov-body">'+
+    '<table class="mini"><thead><tr><th>Correspondence</th><th>Type</th><th>Issues</th><th>Status</th></tr></thead><tbody>'+crows+'</tbody></table>'+
+    '<button class="btn-out btn-wide" data-open="corr">View correspondence</button></div></div>';
+
+  var en=R.endorsers.length? R.endorsers.map(function(e,i){return '<div class="mini-en"><span class="n">'+(i+1)+'</span>'+av(e.u)+'<span>'+nm(e.u)+'</span>'+enChip(e,i)+'</div>';}).join('') : '<span class="dash">None set</span>';
+  var determined=R.phase==='determined';
+  var as='<div class="ov-card focus"><span class="focus-tag">Changed</span><div class="ov-head"><span class="ov-title">Assessment</span></div><div class="ov-body">'+
+    kv('Status',recChip(st,false,true))+
+    (determined? kv('Determination',ch(REC_TO_DET[R.rec]&&R.det?R.det.determination:'Approved','c-det',I.tick))+kv('Determined','08 Nov 2026 &middot; finalised by '+nm(R.finalisedBy)) : kv('Recommendation',R.rec?ch(R.rec,R.rec==='Refusal'?'c-ret':'c-done'):'<span class="dash">&mdash;</span>'))+
+    kv('Determining authority',AUTH[(R.det&&R.phase!=='draft'&&R.phase!=='review')?R.det.authority:R.authority])+
+    kv('Assessing officer',who('sean'))+
+    '<div class="kv"><dt>Endorsers</dt><dd style="flex:1">'+en+'</dd></div>'+
+    kv('NoD signatory',who(sigOf()))+kv('Finalising',who(R.finaliser))+
+    (st.k==='fin'?'<div class="banner b-fin" style="margin:10px 0 0">'+I.bolt.replace('<svg','<svg class="bi"')+'<div class="bx"><b>Ready to finalise.</b> All endorsers have endorsed. '+nm(R.finaliser)+' finalises the determination.</div></div>':'')+
+    (determined?'<button class="btn-out btn-wide" data-open="assess" data-at="det">View determination</button>':
+      '<button class="btn-out btn-wide" data-open="assess" data-at="'+(st.k==='fin'?'det':'rec')+'">'+(st.k==='fin'?'View determination':'View assessment')+'</button>')+
+    '</div></div>';
+
+  document.getElementById('page').innerHTML='<div class="crumb"><a data-goto="apps">Applications</a></div>'+
+    '<div class="page-head"><div class="page-title">'+I.back.replace('class="back"','class="back" data-goto="apps"')+APP.id+' | '+APP.addr+' | Age: '+APP.age+' days</div>'+
+    '<button class="btn-out">Open in Trapeze</button></div><div class="gap"></div>'+
+    '<div class="ov-grid">'+summary+map+plan+'</div><div class="ov-grid">'+comp+ref+docs+'</div><div class="ov-grid">'+cond+corr+as+'</div>';
+}
+function sigOf(){var R=S.rec;if(R.signatory) return R.signatory;return R.endorsers.length?R.endorsers[0].u:OFFICER;}
+function enChip(e,i){
+  var R=S.rec;
+  if(e.st==='endorsed') return ch('Endorsed','c-end',I.tick);
+  if(e.st==='returned') return ch('Returned','c-ret',I.ret);
+  if(e.st==='review') return ch('Under review','c-rev',I.eye);
+  if(e.st==='notstarted') return ch('Not started','c-await',I.clock,false).replace('Not started','Requested &middot; not started');
+  return ch(R.phase==='draft'?'Not requested':'Queued','c-neutral');
+}
+
+/* ============================================================
+   SCREEN — CORRESPONDENCE  (was Manage RFIs)
+   One page for every template. The template sets the title, the
+   default introduction and closing text, and whether the piece is a
+   REQUEST (needs a response -> Awaiting response -> Closed) or a
+   NOTICE (no response -> Sent, closes itself).
+   Numbering runs across all correspondence on the application.
+   ============================================================ */
+function bi(svg){return svg.replace('<svg','<svg class="bi"');}
+function banner(cls,icon,html,actions){return '<div class="banner '+cls+'">'+bi(icon)+'<div class="bx">'+html+'</div>'+(actions?'<div class="ba">'+actions+'</div>':'')+'</div>';}
+function lastLog(c,re){var f=null;c.log.forEach(function(l){if(re.test(l.what)) f=l;});return f;}
+function letterEditable(c){
+  if(S.me===OFFICER && ['draft','returned','endorsed'].indexOf(c.status)>=0) return true;
+  if(c.endorser===S.me && c.status==='review') return true;
+  return false;
+}
+function letterSignatory(c){ if(c.endorsedBy) return c.endorsedBy; if(canCorr(OFFICER)) return OFFICER; return null; }
+function paras(arr){return arr.map(function(p){return '<p>'+p+'</p>';}).join('');}
+function disWrap(btn,tip){return '<span class="wrap-dis" data-tip="'+tip+'">'+btn+'</span>';}
+
+function renderCorr(){
+  var i=S.sel, c=S.corr[i], me=S.me, t=TPL[c.tpl], name=corrName(i);
+  var isOff=(me===OFFICER), isRev=(c.endorser===me&&(c.status==='awaiting'||c.status==='review'));
+  var auth=canCorr(OFFICER), ed=letterEditable(c);
+
+  /* ---- left list ---- */
+  var left='<div class="cr-left"><div class="cr-left-h"><b>Correspondence</b>'+
+    (isOff?'<button class="btn-out" data-act="newcorr">'+I.plus+'New</button>':'')+'</div>'+
+    S.corr.map(function(x,j){
+      var on=(j===i);
+      var iss=on? x.issues.map(function(s){return '<div class="cr-iss">'+av(s.by)+'<span>'+s.h+'</span></div>';}).join(''):'';
+      return '<div class="cr-item'+(on?' on':'')+'" data-sel="'+j+'"><div class="cr-item-t">'+corrName(j)+corrChip(x.status)+'</div>'+
+        '<div class="cr-item-m">'+(TPL[x.tpl].kind==='request'?'Request':'Notice')+' &middot; '+x.issues.length+' issue'+(x.issues.length===1?'':'s')+'</div></div>'+iss;
+    }).join('')+'</div>';
+
+  /* ---- actions ---- */
+  var pdf='<button class="btn-out" data-act="letterpdf">'+I.doc+'Create PDF</button>';
+  var acts=pdf;
+  var markSentDis='<button class="btn-out" disabled>'+I.send+'Mark sent</button>';
+  if(isOff){
+    if(c.status==='draft'||c.status==='returned'){
+      if(auth) acts+='<button class="btn-primary" data-act="marksent">'+I.send+'Mark sent</button>';
+      else acts+=disWrap(markSentDis,'<b>You don&rsquo;t have authority to correspond</b>Request authorisation. Mark sent unlocks once someone with authority endorses this letter.')+
+                 '<button class="btn-primary" data-act="reqauth">Request authorisation</button>';
+    } else if(c.status==='awaiting'||c.status==='review'){
+      acts+=disWrap(markSentDis,'<b>Waiting for '+nm(c.endorser)+'</b>Mark sent unlocks once the letter is endorsed.');
+    } else if(c.status==='endorsed'){
+      acts+='<button class="btn-primary" data-act="marksent">'+I.send+'Mark sent</button>';
+    } else if(c.status==='awaiting_response'){
+      acts+='<button class="btn-primary" data-act="closecorr">Close '+name+'</button>';
+    }
+  } else if(isRev){
+    if(c.status==='awaiting') acts+='<button class="btn-primary" data-act="startcorr">'+I.eye+'Start review</button>';
+    else acts+='<button class="btn-danger" data-act="retcorr">Return</button><button class="btn-ok" data-act="endcorr">'+I.tick+'Endorse</button>';
+  }
+
+  /* ---- banners ---- */
+  var b='', req=lastLog(c,/Requested authorisation/), started=lastLog(c,/Started review/), endl=lastLog(c,/Endorsed/);
+  if(isOff){
+    if(c.status==='returned'&&c.returnNote) b+=banner('b-ret',I.ret,'<b>Returned by '+nm(c.returnNote.by)+'</b> &middot; '+c.returnNote.at+'<div class="quote">'+esc(c.returnNote.note)+'</div><div class="bsub">Make the changes, then request authorisation again.</div>');
+    if(c.status==='draft'||c.status==='returned'){
+      b+= auth? banner('b-ok',I.ok,'<b>You have authority to correspond.</b> When you mark this sent, it is signed off with your name and job title.')
+              : banner('b-info',I.info,'<b>You don&rsquo;t have authority to correspond.</b> When the letter is ready, request authorisation from someone who does. It will be signed off with their name and job title.');
+    }
+    if(c.status==='awaiting') b+=banner('b-rev',I.clock,'<b>Awaiting authorisation from '+nm(c.endorser)+'.</b> Requested '+(req?req.at:'')+'. They haven&rsquo;t started reviewing yet.<div class="bsub">The letter is locked while it is with the reviewer.</div>');
+    if(c.status==='review') b+=banner('b-rev',I.eye,'<b>'+nm(c.endorser)+' is reviewing this letter.</b> Started '+(started?started.at:'')+'.<div class="bsub">The letter is locked while it is with the reviewer.</div>');
+    if(c.status==='endorsed') b+=banner('b-ok',I.ok,'<b>Endorsed by '+nm(c.endorsedBy)+'</b> &middot; '+(endl?endl.at:'')+'. Ready to send.'+(endl&&endl.note?'<div class="quote">'+esc(endl.note)+'</div>':'')+'<div class="bsub">Editing the letter now removes the endorsement and it will need authorising again.</div>');
+  } else if(isRev){
+    if(c.status==='awaiting') b+=banner('b-rev',I.info,'<b>'+nm(OFFICER)+' requested your authorisation</b> &middot; '+(req?req.at:'')+(req&&req.note?'<div class="quote">'+esc(req.note)+'</div>':'')+'<div class="bsub">Start review to edit the letter and decide. '+nm(OFFICER)+' sees that you&rsquo;ve started.</div>');
+    else b+=banner('b-rev',I.eye,'<b>You&rsquo;re reviewing this letter.</b> You can reorder, remove or rewrite any issue and the introduction and closing text. Your changes are recorded against the request. Then Endorse or Return.');
+  } else if(!isOff && ['draft','returned','awaiting','review','endorsed'].indexOf(c.status)>=0){
+    b+=banner('b-lock',I.lock,'View only. This letter is with '+(c.endorser&&(c.status==='awaiting'||c.status==='review')?nm(c.endorser):nm(OFFICER))+'.');
+  }
+  if(c.status==='awaiting_response') b+=banner('b-info',I.info,'<b>Sent '+c.sentAt+'</b> &middot; signed off by '+nm(c.endorsedBy)+'. Awaiting the applicant&rsquo;s response.'+(isOff?'<div class="bsub">When you have reviewed the response, close the letter and record the outcome.</div>':''));
+  if(c.status==='sent') b+=banner('b-ok',I.ok,'<b>Sent '+c.sentAt+'</b> &middot; signed off by '+nm(c.endorsedBy)+'. Notices need no response, so this closed automatically.');
+
+  /* ---- template row ---- */
+  var tpl='';
+  if(isOff&&(c.status==='draft'||c.status==='returned')){
+    tpl='<div class="tplrow"><label>Template</label><select class="sel" id="tplsel">'+TPL_ORDER.map(function(k){return '<option value="'+k+'"'+(k===c.tpl?' selected':'')+'>'+TPL[k].name+'</option>';}).join('')+'</select>'+
+      kindChip(c.tpl)+'<span style="font-size:12px;color:var(--ink-med)">Named <b>'+name+'</b> &middot; PDF titled <b>'+t.doc+'</b></span>'+
+      '<div class="note">Templates, and the default introduction and closing text for each, are configured for North Sydney by Objective Professional Services. The template decides whether this is a request (response required) or a notice (no response).</div></div>';
+  }
+
+  /* ---- outcome + log ---- */
+  var out=c.closing?'<div class="outcome"><div class="outcome-h">'+I.tick+'Closing comments</div><div class="outcome-x">'+esc(c.closing.note)+'</div><div class="outcome-m">'+nm(c.closing.by)+' &middot; '+c.closing.at+'</div></div>':'';
+  var logShut=S.shut['clog'+i]!==false && !isRev;
+  var log=c.log.length?'<div class="sec-card'+(logShut?' shut':'')+'" data-shut="clog'+i+'"><div class="sec-card-h collap-h">'+I.chev+'Authorisation log <span class="muted" style="font-weight:400">('+c.log.length+')</span>'+
+    '<span class="sp" style="font-weight:400;font-size:11.5px;color:var(--ink-light)">'+(c.endorser?'Authoriser: '+nm(c.endorser):'')+'</span></div>'+
+    '<div class="sec-card-b collap-b"><div class="log">'+c.log.map(function(l){return '<div class="log-row"><span class="w">'+l.at+'</span><span class="e"><b>'+nm(l.who)+'</b> &mdash; '+l.what+(l.note?'<span class="nt">&ldquo;'+esc(l.note)+'&rdquo;</span>':'')+'</span></div>';}).join('')+'</div></div></div>':'';
+
+  /* ---- letter sections ---- */
+  function partCard(part,title,arr){
+    var editing=S.edit&&S.edit.part===part;
+    var tools=ed&&!editing?'<button class="ibtn" data-ed="'+part+'" data-tip="Edit">'+I.edit+'</button>':'';
+    return '<div class="sec-card"><div class="sec-card-h">'+I.doc.replace('<svg','<svg class="ic"')+title+'<span class="sp">'+tools+'</span></div><div class="sec-card-b">'+
+      (editing?'<div class="lbox ed" contenteditable="true" id="edbody">'+paras(arr)+'</div><div class="edbar"><button class="btn-flat" data-act="edcancel">Cancel</button><button class="btn-primary" data-act="edsave">Save</button></div>'
+              :'<div class="lbox">'+paras(arr)+'</div>')+'</div></div>';
+  }
+  var issues=c.issues.map(function(s,n){
+    var editing=S.edit&&S.edit.part===n;
+    var tools=ed&&!editing?'<button class="ibtn" data-ed="'+n+'" data-tip="Edit">'+I.edit+'</button>'+
+      '<button class="ibtn" data-mv="'+n+'|-1"'+(n===0?' disabled':'')+' data-tip="Move up">'+I.up+'</button>'+
+      '<button class="ibtn" data-mv="'+n+'|1"'+(n===c.issues.length-1?' disabled':'')+' data-tip="Move down">'+I.down+'</button>'+
+      '<button class="ibtn" data-rm="'+n+'" data-tip="Remove from letter">'+I.trash+'</button>':'';
+    return '<div class="sec-card"><div class="sec-card-h"><span class="muted" style="font-weight:500;font-variant-numeric:tabular-nums">'+(n+1)+'.</span>'+
+      (editing?'':s.h)+'<span class="sp">'+tools+'</span></div><div class="sec-card-b"><div class="sec-card-m">'+av(s.by)+s.at+(s.editedBy?' &middot; edited by '+nm(s.editedBy):'')+'</div>'+
+      (editing?'<input class="htitle" id="edtitle" value="'+esc(s.h)+'"/><div class="lbox ed" contenteditable="true" id="edbody">'+paras(s.b)+'</div><div class="edbar"><button class="btn-flat" data-act="edcancel">Cancel</button><button class="btn-primary" data-act="edsave">Save</button></div>'
+              :'<div class="lbox">'+paras(s.b)+'</div>')+'</div></div>';
+  }).join('');
+  var addIssue=(isOff&&(c.status==='draft'||c.status==='returned'))?'<button class="btn-out" data-act="addissue" style="margin-bottom:12px">'+I.plus+'Add issue</button>':'';
+
+  var meta=c.issues.length+' issue'+(c.issues.length===1?'':'s')+' &middot; Draft created '+c.created+(c.sentAt?' &middot; Marked sent '+c.sentAt:'');
+  document.getElementById('page').innerHTML='<div class="crumb"><a data-goto="apps">Applications</a> / <a data-goto="ov">Application '+APP.id+'</a></div>'+
+    '<div class="page-head"><div class="page-title">'+I.back.replace('class="back"','class="back" data-goto="ov"')+'Correspondence</div></div><div class="gap"></div>'+
+    '<div class="panel"><div class="cr-wrap">'+left+'<div class="cr-right">'+
+      '<div class="cr-head"><div><div class="cr-name">'+name+corrChip(c.status)+kindChip(c.tpl)+'</div><div class="cr-meta">'+meta+'</div></div><div class="cr-acts">'+acts+'</div></div>'+
+      '<div class="cr-body">'+b+tpl+out+log+partCard('intro','Introduction',c.intro)+issues+addIssue+partCard('outro','Closing instructions',c.outro)+'</div>'+
+    '</div></div></div>';
+}
+
+/* ---- edits: with the endorsement guard ---- */
+var PENDING=null;
+function guardEdit(fn){
+  var c=S.corr[S.sel];
+  if(S.me===OFFICER && c.status==='endorsed'){ PENDING=fn; modalEditWarn(c); return; }
+  fn();
+}
+function logRev(c,what){ if(c.endorser===S.me && c.status==='review') lg(c.log,S.me,what); }
+function saveEdit(){
+  var c=S.corr[S.sel], e=S.edit; if(!e) return;
+  var bodyEl=document.getElementById('edbody');
+  var ps=[].slice.call(bodyEl.querySelectorAll('p')).map(function(p){return p.innerHTML;}).filter(function(x){return x.replace(/<br>|&nbsp;|\s/g,'')!=='';});
+  if(!ps.length) ps=[bodyEl.innerHTML];
+  if(e.part==='intro'){ c.intro=ps; logRev(c,'Edited the <b>introduction</b>'); }
+  else if(e.part==='outro'){ c.outro=ps; logRev(c,'Edited the <b>closing instructions</b>'); }
+  else { var s=c.issues[e.part]; var h=document.getElementById('edtitle').value||s.h; logRev(c,'Edited issue <b>'+esc(s.h)+'</b>'+(h!==s.h?' (renamed '+esc(h)+')':'')); s.h=h; s.b=ps; if(c.endorser===S.me&&c.status==='review') s.editedBy=S.me; }
+  S.edit=null; render(); toast('Saved');
+}
+
+/* ============================================================
+   SCREEN — ASSESSMENT
+   Recommendation tab: the officer's recommendation + the new
+   Endorsement and sign off card. Determination tab: where the
+   finaliser confirms and finalises. Once finalised, the
+   Assessment panel lands on Determination.
+   ============================================================ */
+var ETOOL='<div class="etool"><span class="tb">&#8630;</span><span class="tb">&#8631;</span><i class="div"></i><span class="tb" style="width:34px">P &#9662;</span><i class="div"></i>'+
+  '<span class="tb" style="font-weight:700">B</span><span class="tb" style="font-style:italic;font-family:Georgia,serif">I</span><span class="tb" style="text-decoration:underline">U</span>'+
+  '<span class="tb" style="text-decoration:line-through">S</span><i class="div"></i><span class="tb">&#8801;</span><span class="tb">&#8226;&#8801;</span><i class="div"></i><span class="tb">&#128279;</span></div>';
+var EXEC_DEFAULT='The application seeks consent for alterations and additions to an existing dwelling house at 54 Kurraba Road, Neutral Bay. Amended plans received on 4 November 2026 in response to RFI letter 1 increase the side setback, lower the floor level of the addition and set the garage back from the front façade.';
+var COMMENTARY=['Executive Summary','The Proposal','The Site and Locality','Site History','Application History','Public Notification and Submissions'];
+
+function curEndorser(){var R=S.rec;return R.phase==='review'?R.endorsers[R.cur]:null;}
+function isCurReviewer(){var e=curEndorser();return !!e && e.u===S.me;}
+function canEditRec(){var R=S.rec;if(S.me===OFFICER&&R.phase==='draft') return true;var e=curEndorser();return !!e&&e.u===S.me&&e.st==='review';}
+function canManageEnd(){var R=S.rec;if(S.me===OFFICER&&R.phase==='draft') return true;var e=curEndorser();return !!e&&e.u===S.me&&e.st==='review';}
+function canSetSig(){var R=S.rec;if(R.phase==='determined') return false;if(S.me===OFFICER) return true;if(R.phase==='finalise'&&S.me===R.finaliser) return true;var e=curEndorser();return !!e&&e.u===S.me&&e.st==='review';}
+function resumeIdx(){var R=S.rec;for(var i=0;i<R.endorsers.length;i++){if(R.endorsers[i].st!=='endorsed') return i;}return 0;}
+function revLog(field,label){
+  var R=S.rec;
+  if(isCurReviewer()){var k=S.me+'|'+field+'|'+R.cur; if(!R.reviewEdits[k]){R.reviewEdits[k]=1; lg(R.log,S.me,'Edited <b>'+label+'</b>');}}
+}
+function checks(){
+  var pre=S.prereq,R=S.rec,open=[];
+  S.corr.forEach(function(c,i){if(!corrIsClosed(c)) open.push(corrName(i)+' ('+CS[c.status][0].toLowerCase()+')');});
+  return [
+    {ok:pre,t:'Checklist created and all items started',s:pre?'23 of 23 items started':'18 of 23 items started'},
+    {ok:pre,t:'Internal referrals complete',s:pre?'4 of 4 complete':'2 of 4 complete'},
+    {ok:!open.length,t:'All correspondence closed',s:open.length?open.join(', '):S.corr.length+' of '+S.corr.length+' closed'},
+    {ok:!!R.rec,t:'Recommendation made',s:R.rec||'Not selected'},
+    {ok:!!R.authority,t:'Determining authority specified',s:R.authority?AUTH[R.authority]:'Not selected'},
+    {ok:pre,t:'Condition placeholders populated',s:pre?'12 of 12 populated':'10 of 12 populated'},
+    {ok:R.endorsers.length>0,t:'At least one endorser',s:R.endorsers.length?R.endorsers.length+' in the endorsement list':'Add an endorser'}
+  ];
+}
+function posBtns(attr,opts,sel,editable,green){
+  return '<div class="posrow">'+opts.map(function(o){var k=o[0],l=o[1],on=(k===sel);
+    return '<button class="posbtn'+(on?' sel'+(green&&on?' green':''):'')+(editable?'':' ro')+'"'+(editable?' data-'+attr+'="'+k+'"':'')+'>'+l+'</button>';}).join('')+'</div>';
+}
+
+function renderAssess(){
+  var R=S.rec;
+  var detOK=(R.phase==='finalise'||R.phase==='determined');
+  if(!detOK && S.aTab==='det') S.aTab='rec';
+  var tabs='<div class="atabs"><button class="tab'+(S.aTab==='rec'?' on':'')+'" data-as="rec">Recommendation</button>'+
+    (detOK?'<button class="tab'+(S.aTab==='det'?' on':'')+'" data-as="det">Determination</button>'
+          :'<span data-tip="<b>Available once every endorser has endorsed</b>The person responsible for finalising confirms the determination here."><button class="tab" disabled>Determination</button></span>')+'</div>';
+  var main=(S.aTab==='det')?detView():recView();
+  document.getElementById('page').innerHTML='<div class="crumb"><a data-goto="apps">Applications</a> / <a data-goto="ov">Application '+APP.id+'</a></div>'+
+    '<div class="page-head"><div class="page-title">'+I.back.replace('class="back"','class="back" data-goto="ov"')+'Assessment '+recChip(recStatus(),false,true)+'</div></div><div class="gap"></div>'+
+    '<div class="as-wrap"><div class="as-main">'+tabs+main+'</div>'+sideRail()+'</div>';
+}
+
+function recBanners(){
+  var R=S.rec,me=S.me,e=curEndorser(),b='';
+  var winBtn='<button class="btn-out" data-act="newwin">'+I.win+'Open application in new window</button>';
+  if(R.phase==='review'){
+    if(e.u===me){
+      var req=null;R.log.forEach(function(l){if(/Requested endorsement|Resumed endorsement|sent automatically/.test(l.what)) req=l;});
+      if(e.st==='notstarted') b+=banner('b-rev',I.info,'<b>Endorsement requested</b> by '+nm(OFFICER)+(R.cur>0?' &middot; reached you after '+nm(R.endorsers[R.cur-1].u)+' endorsed':'')+' &middot; you are endorser '+(R.cur+1)+' of '+R.endorsers.length+'.'+
+        '<div class="bsub">Start review to change the status to Under review. You can then edit the assessment and recommendation, and Endorse or Return.</div>',winBtn+'<button class="btn-primary" data-act="startrec">'+I.eye+'Start review</button>');
+      else b+=banner('b-rev',I.eye,'<b>You&rsquo;re reviewing this recommendation</b> (endorser '+(R.cur+1)+' of '+R.endorsers.length+'). You can edit it as the assessing officer could. Your changes are recorded in the endorsement history.',
+        winBtn+'<button class="btn-danger" data-act="retrec">Return</button><button class="btn-ok" data-act="endrec">'+I.tick+'Endorse</button>');
+    } else if(me===OFFICER){
+      var a=endCount();
+      b+=banner('b-lock',I.lock,'<b>'+(e.st==='review'?'Under review by '+nm(e.u):'With '+nm(e.u)+' &mdash; not started yet')+'</b> (endorser '+(R.cur+1)+' of '+R.endorsers.length+(a?', '+a+' endorsed so far':'')+').'+
+        '<div class="bsub">You can&rsquo;t change the assessment or recommendation while it is under review'+(a?' or once it has been endorsed':'')+'. You can still change the NoD signatory.</div>');
+    } else b+=banner('b-lock',I.lock,'View only. This recommendation is with '+nm(e.u)+'.');
+  }
+  if(R.phase==='draft'&&R.returned&&me===OFFICER){
+    var ri=resumeIdx(),re=R.endorsers[ri];
+    b+=banner('b-ret',I.ret,'<b>Returned by '+nm(re.u)+'</b> &middot; '+re.at+'<div class="quote">'+esc(re.note)+'</div>'+
+      '<div class="bsub">Make your changes, then resume endorsement with '+nm(re.u)+' (endorser '+(ri+1)+' of '+R.endorsers.length+').'+(ri>0?' Earlier endorsements stand &mdash; it does not restart at the top of the list.':'')+'</div>');
+  }
+  if(R.phase==='draft'&&me!==OFFICER) b+=banner('b-lock',I.lock,'View only. '+nm(OFFICER)+' is preparing this recommendation.');
+  if(R.phase==='finalise') b+=banner('b-fin',I.bolt,'<b>All '+R.endorsers.length+' endorsers have endorsed.</b> '+(me===R.finaliser?'You are responsible for finalising this determination.':nm(R.finaliser)+' is responsible for finalising the determination.')+
+    '<div class="bsub">The recommendation is locked. Final details are confirmed on the Determination tab.</div>','<button class="btn-primary" data-as="det">View determination</button>');
+  if(R.phase==='determined') b+=banner('b-ok',I.ok,'<b>Determined.</b> Finalised by '+nm(R.finalisedBy)+' &middot; '+R.finalisedAt+'.','<button class="btn-out" data-as="det">View determination</button>');
+  return b;
+}
+
+function recView(){
+  var R=S.rec, ed=canEditRec(), b=recBanners();
+  var exShut=S.shut.exec!==false;
+  var comm='<div class="panel"><div class="cm-head">'+I.chev+'<b>Assessment commentary</b> <span class="muted" style="font-size:11px">(6 sections)</span>'+
+    '<span style="margin-left:auto;display:flex;gap:14px;align-items:center"><button class="btn-link">Expand all</button><button class="btn-out"'+(ed?'':' disabled')+'>'+I.plus+'Add section</button></span></div>'+
+    COMMENTARY.map(function(t,i){
+      if(i===0) return '<div class="'+(exShut?'shut':'')+'" data-shut="exec"><div class="cm-row collap-h">'+t+'<span class="sp"><button class="ibtn"'+(ed?'':' disabled')+'>'+I.edit+'</button><button class="ibtn"'+(ed?'':' disabled')+'>'+I.trash+'</button>'+I.chev+'</span></div>'+
+        '<div class="collap-b" style="padding:0 18px 14px"><div class="editor">'+(ed?ETOOL:'')+'<div class="ebody" id="ed-exec" contenteditable="'+(ed?'true':'false')+'">'+(R.exec||EXEC_DEFAULT)+'</div></div></div></div>';
+      return '<div class="cm-row">'+t+'<span class="sp"><button class="ibtn"'+(ed?'':' disabled')+'>'+I.edit+'</button><button class="ibtn"'+(ed?'':' disabled')+'>'+I.trash+'</button>'+I.chev.replace('class="chev"','class="chev" style="width:12px;height:12px;fill:var(--ink-faint);transform:rotate(-90deg)"')+'</span></div>';
+    }).join('')+'</div>';
+
+  var form='<div class="panel"><div class="fbody">'+
+    '<div class="fsec"><span class="flab">Determining authority</span>'+posBtns('auth',[['delegated','Under delegated authority'],['lpp_local','Local planning panel - local'],['lpp_rs','Local planning panel - regionally significant']],R.authority,ed)+'</div>'+
+    '<div class="fsec"><span class="flab">Recommendation</span>'+posBtns('rec',[['Approval','Approval'],['Deferred commencement','Deferred commencement'],['Refusal','Refusal']],R.rec,ed,true)+'</div>'+
+    '<div class="fsec" style="display:flex;align-items:center;gap:10px"><span class="flab" style="margin:0">Consent duration</span><input class="inp" id="in-dur" style="width:70px" value="'+R.duration+'"'+(ed?'':' disabled')+'/><span class="muted" style="font-size:12px">years</span></div>'+
+    '<div class="fsec"><span class="flab">Reasons for recommendation</span><div class="editor">'+(ed?ETOOL:'')+'<div class="ebody" id="ed-reasons" contenteditable="'+(ed?'true':'false')+'">'+R.reasons+'</div></div></div>'+
+    '</div>'+recActions()+'</div>';
+  return b+comm+form+endorseCard();
+}
+
+function recActions(){
+  var R=S.rec, me=S.me, ck=checks(), fails=ck.filter(function(c){return !c.ok;});
+  var left='<button class="btn-out" data-act="reportpdf">'+I.doc+'Create Report PDF</button><button class="btn-out" data-act="nodpdf">'+I.doc+'Create Notice PDF</button>';
+  var right='';
+  if(me===OFFICER&&R.phase==='draft'){
+    var lab=R.returned?'Resume endorsement with '+nm(R.endorsers[resumeIdx()].u):'Request endorsement';
+    var btn='<button class="btn-primary" data-act="reqend"'+(fails.length?' disabled':'')+'>'+I.send+lab+'</button>';
+    right='<button class="btn-out" data-act="save">Save now</button>'+(fails.length?disWrap(btn,'<b>Not ready for endorsement</b>'+fails.map(function(f){return '&bull; '+f.t;}).join('<br/>')):btn);
+  } else if(isCurReviewer()&&curEndorser().st==='review'){
+    right='<button class="btn-out" data-act="save">Save now</button>';
+  }
+  return '<div class="factions">'+left+'<span class="sp">'+right+'</span></div>';
+}
+
+function endorseCard(){
+  var R=S.rec, me=S.me, man=canManageEnd(), isOffDraft=(me===OFFICER&&R.phase==='draft');
+  var rows=R.endorsers.map(function(e,i){
+    var cur=(R.phase==='review'&&i===R.cur);
+    var canRm= man && e.st!=='endorsed' && !(R.phase==='review'&&i<=R.cur);
+    var meta=e.at?'<span class="muted" style="font-size:11px;white-space:nowrap">'+e.at+'</span>':'<span></span>';
+    return '<div class="en-row'+(cur?' cur':'')+'"><span class="en-n">'+(i+1)+'</span>'+av(e.u,'lg')+
+      '<div><div class="en-name">'+nm(e.u)+(sigOf()===e.u?'<span class="sig-tag">NoD signatory</span>':'')+'</div><div class="en-title">'+U[e.u].t+'</div></div>'+
+      '<div style="display:flex;align-items:center;gap:10px">'+meta+enChip(e,i)+'</div>'+
+      '<div>'+(canRm?'<button class="ibtn" data-rmend="'+i+'" data-tip="Remove from endorsement list">'+I.trash+'</button>':'<span style="display:inline-block;width:26px"></span>')+'</div>'+
+      (e.note?'<div class="en-note"><b>'+(e.st==='returned'?'Returned':'Endorsed')+':</b> '+esc(e.note)+'</div>':'')+'</div>';
+  }).join('');
+  if(!rows) rows='<div class="en-empty">No endorsers yet. Add one or more people with authority to endorse. Requests go to them in order.</div>';
+  var sigOpts=[OFFICER].concat(R.endorsers.map(function(e){return e.u;})).map(function(k){return '<option value="'+k+'"'+(sigOf()===k?' selected':'')+'>'+nm(k)+(k===OFFICER?' (assessing officer)':'')+'</option>';}).join('');
+  var finOpts=[OFFICER,'kate','tom'].map(function(k){return '<option value="'+k+'"'+(R.finaliser===k?' selected':'')+'>'+nm(k)+(k===OFFICER?' (me)':' — '+U[k].t)+'</option>';}).join('');
+  var finEd=(me===OFFICER&&(R.phase==='draft'||R.phase==='review'));
+  var ck='';
+  if(isOffDraft){
+    ck='<div class="fsec"><span class="flab">Ready for endorsement?</span><div class="checks">'+checks().map(function(c){
+      return '<div class="chk '+(c.ok?'ok':'no')+'">'+(c.ok?I.ok:I.x)+'<span>'+c.t+'<span class="s">'+c.s+'</span></span></div>';}).join('')+'</div></div>';
+  }
+  var logShut=S.shut.rlog!==false;
+  var log=R.log.length?'<div class="sec-card'+(logShut?' shut':'')+'" data-shut="rlog" style="margin:16px 0 0"><div class="sec-card-h collap-h">'+I.chev+'Endorsement history <span class="muted" style="font-weight:400">('+R.log.length+')</span></div>'+
+    '<div class="sec-card-b collap-b"><div class="log">'+R.log.map(function(l){return '<div class="log-row"><span class="w">'+l.at+'</span><span class="e"><b>'+nm(l.who)+'</b> &mdash; '+l.what+(l.note?'<span class="nt">&ldquo;'+esc(l.note)+'&rdquo;</span>':'')+'</span></div>';}).join('')+'</div></div></div>':'';
+  return '<div class="panel"><div class="card-h"><b>Endorsement and sign off</b><span class="new-tag">New</span><span class="sp">'+
+      (man?'<button class="btn-out" data-act="addend">'+I.plus+'Add endorser</button>':'')+'</span></div><div class="fbody">'+
+    '<div class="fsec"><span class="flab">Endorsement list</span><div class="en-list">'+rows+'</div>'+
+      '<div class="fhelp">Requests go to each endorser in order. When one endorses, the next receives the request automatically.</div></div>'+
+    '<div class="fsec two"><div><span class="flab">NoD signatory</span><select class="sel" id="sel-sig" style="width:100%"'+(canSetSig()?'':' disabled')+'>'+sigOpts+'</select>'+
+      '<div class="fhelp">Signs the Notice of Determination. Defaults to the first endorser. Can change until the determination is finalised.</div></div>'+
+      '<div><span class="flab">Responsible for finalising</span><select class="sel" id="sel-fin" style="width:100%"'+(finEd?'':' disabled')+'>'+finOpts+'</select>'+
+      '<div class="fhelp">You, or an active user who administers assessments. Receives the Finalise task once every endorser has endorsed.</div></div></div>'+
+    ck+log+'</div></div>';
+}
+
+function sideRail(){
+  var outs=S.corr.map(function(c,i){
+    return '<div class="side-out"><div class="h">'+corrName(i)+corrChip(c.status)+'</div>'+
+      (c.closing?'<div class="x">'+esc(c.closing.note)+'</div><div class="m">Closing comments &middot; '+nm(c.closing.by)+' &middot; '+c.closing.at+'</div>'
+                :'<div class="m">No closing comments yet.</div>')+'</div>';}).join('');
+  function sec(id,title,body,def){var shut=(S.shut[id]===undefined?def:S.shut[id]);
+    return '<div class="side-sec'+(shut?' shut':'')+'" data-shut="'+id+'"><div class="collap-h">'+title+I.chev+'</div><div class="collap-b">'+body+'</div></div>';}
+  return '<aside class="panel as-side">'+
+    sec('s-app','Application detail',kv('Submitted',APP.submitted)+kv('Application',APP.id)+kv('Address',APP.addr)+kv('Application type','Development application')+kv('EDC (ex GST)',APP.edc)+kv('Description',APP.desc)+kv('Applicant name',APP.applicant),false)+
+    sec('s-corr','Correspondence outcomes <span class="new-tag" style="margin-left:6px">New</span>',outs,false)+
+    sec('s-map','Map preview','<div class="mapbox" style="height:150px"><span class="lot">R2</span></div>',true)+
+    sec('s-plan','Planning summary',kv('LEP','North Sydney LEP 2013')+kv('Land zoning','R2: Low Density Residential'),true)+
+    sec('s-docs','Portal documents (9)','<div class="doc"><span class="pdf">PDF</span>Amended Plans 04-11-2026.pdf</div>',true)+
+    sec('s-note','File note','<div class="hint">No file notes.</div>',true)+
+  '</aside>';
+}
+
+/* ---------- Determination tab ---------- */
+function detView(){
+  var R=S.rec, me=S.me, D=R.det, fin=(R.phase==='finalise'), ed=fin&&me===R.finaliser, b='';
+  if(fin&&ed) b=banner('b-fin',I.bolt,'<b>Finalise this determination.</b> Confirm the details below &mdash; including any decisions from a Local Planning Panel meeting &mdash; then finalise. Finalising locks the assessment and produces the final assessment report and Notice of Determination.');
+  else if(fin) b=banner('b-lock',I.lock,'<b>Awaiting finalisation by '+nm(R.finaliser)+'.</b> Every endorser has endorsed.'+(me===OFFICER?'<div class="bsub">You can still change the NoD signatory until the determination is finalised.</div>':''));
+  else b=banner('b-ok',I.ok,'<b>Determination finalised</b> by '+nm(R.finalisedBy)+' &middot; '+R.finalisedAt+'. The final assessment report and Notice of Determination are ready to file and send.');
+  var lpp=(D.authority!=='delegated');
+  var lapses=addYears(R.detDate,R.duration);
+  var dets=[['Approved','Approved'],['Approved - deferred commencement','Approved - deferred commencement'],['Refused','Refused']];
+  var form='<div class="panel"><div class="card-h"><b>Determination</b></div><div class="fbody">'+
+    '<div class="fsec"><span class="flab">Determining authority</span>'+posBtns('dauth',[['delegated','Under delegated authority'],['lpp_local','Local planning panel - local'],['lpp_rs','Local planning panel - regionally significant'],['lpp_del','Under authority delegated by the LPP']],D.authority,ed)+'</div>'+
+    (lpp?'<div class="fsec two"><div><span class="flab">LPP meeting date</span><input class="inp" id="in-lppdate" style="width:100%" placeholder="e.g. 03 Dec 2026" value="'+esc(R.lppDate)+'"'+(ed?'':' disabled')+'/></div>'+
+      '<div><span class="flab">LPP reference</span><input class="inp" id="in-lppref" style="width:100%" placeholder="e.g. NSLPP 24/26 &ndash; Item 3" value="'+esc(R.lppRef)+'"'+(ed?'':' disabled')+'/><div class="fhelp">Printed with the determining authority on the Notice of Determination.</div></div></div>':'')+
+    '<div class="fsec"><span class="flab">Determination</span>'+posBtns('ddet',dets,D.determination,ed,true)+'</div>'+
+    '<div class="fsec"><span class="flab">Reason for determination <span class="req">*</span></span><div class="editor">'+(ed?ETOOL:'')+'<div class="ebody" id="ed-dreasons" contenteditable="'+(ed?'true':'false')+'">'+D.reasons+'</div></div></div>'+
+    '<div class="fsec two"><div><span class="flab">Date of determination</span><input class="inp" id="in-ddate" style="width:100%" value="'+esc(R.detDate)+'"'+(ed?'':' disabled')+'/></div>'+
+      '<div><span class="flab">Consent duration</span><div style="display:flex;gap:10px"><input class="inp" style="flex:1" value="Operates from '+esc(R.detDate)+'" disabled/><input class="inp" style="flex:1" value="Lapses on '+lapses+'" disabled/></div></div></div>'+
+    '<div class="fsec two"><div><span class="flab">Assessing officer</span><div class="det-ro">'+who(OFFICER)+'</div></div>'+
+      '<div><span class="flab">NoD signatory</span><select class="sel" id="sel-sig" style="width:100%"'+(canSetSig()?'':' disabled')+'>'+[OFFICER].concat(R.endorsers.map(function(e){return e.u;})).map(function(k){return '<option value="'+k+'"'+(sigOf()===k?' selected':'')+'>'+nm(k)+' &mdash; '+U[k].t+'</option>';}).join('')+'</select>'+
+      '<div class="fhelp">The correspondence endorser &mdash; signs the Notice of Determination.</div></div></div>'+
+    '<div class="fsec two"><div><span class="flab">Endorsed by</span>'+R.endorsers.map(function(e){return '<div class="mini-en">'+av(e.u)+'<span>'+nm(e.u)+'</span><span class="muted" style="font-size:11px;margin-left:auto">'+(e.at||'')+'</span></div>';}).join('')+'</div>'+
+      '<div><span class="flab">'+(fin?'Finalising':'Finalised by')+'</span><div class="det-ro">'+who(fin?R.finaliser:R.finalisedBy)+'</div></div></div>'+
+    '</div><div class="factions"><button class="btn-out" data-act="reportpdf">'+I.doc+'Create Report PDF</button><button class="btn-out" data-act="nodpdf">'+I.doc+'Create Notice PDF</button>'+
+      '<span class="sp">'+(ed?'<button class="btn-primary" data-act="finalise">'+I.tick+'Finalise determination</button>':'')+'</span></div></div>';
+  return b+form;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+var MS=null; var mask=document.getElementById('mask');
+function mHead(t){return '<div class="m-head"><span class="m-grip"><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="m-title">'+t+'</span><button class="m-x" data-mclose="1">&times;</button></div>';}
+function mFoot(go,label,cls,dis){return '<div class="m-foot"><button class="btn-flat" data-mclose="1">Cancel</button><div class="r"><button class="'+(cls||'btn-primary')+'" data-mgo="'+go+'"'+(dis?' disabled':'')+'>'+label+'</button></div></div>';}
+function openM(html,wide){document.getElementById('modal').innerHTML='<div class="modal'+(wide?' wide':'')+'">'+html+'</div>';mask.classList.add('on');document.body.classList.add('locked');}
+function closeM(){mask.classList.remove('on');document.body.classList.remove('locked');MS=null;}
+function reM(){ if(MS&&MS.draw){ var n=document.getElementById('m-note'); if(n) MS.note=n.value; MS.draw(); } }
+function noteBox(ph,req){return '<span class="flab" style="margin-top:12px">Comments'+(req?' <span class="req" style="color:#c0392b">*</span>':' <span class="muted" style="font-weight:400">(optional)</span>')+'</span>'+
+  '<textarea class="ta" id="m-note" placeholder="'+ph+'">'+esc((MS&&MS.note)||'')+'</textarea><div class="m-err" id="m-err">Comments are required.</div>';}
+function pickRow(k,on,right){return '<div class="pick'+(on?' on':'')+'" data-mpick="'+k+'">'+av(k,'lg')+'<div><div class="nm">'+nm(k)+'</div><div class="tt">'+U[k].t+'</div></div><div class="rt">'+(right||'')+'<span class="ck">'+(on?'&#10003;':'')+'</span></div></div>';}
+
+function modalReqAuth(){
+  var c=S.corr[S.sel], list=Object.keys(U).filter(function(k){return k!==OFFICER&&canCorr(k);});
+  MS={type:'reqauth',pick:MS&&MS.pick||null,note:MS&&MS.note||''};
+  MS.draw=function(){openM(mHead('Request authorisation')+'<div class="m-body"><p>Choose someone with <b>authority to correspond</b> to endorse <b>'+corrName(S.sel)+'</b>. They can edit it before they decide. Once endorsed, it is signed off with their name and job title.</p>'+
+    list.map(function(k){return pickRow(k,MS.pick===k);}).join('')+noteBox('Anything the reviewer should know',false)+'</div>'+mFoot('reqauth','Request authorisation','btn-primary',!MS.pick));};
+  MS.draw();
+}
+function modalDecision(kind,dec){
+  var label=kind==='corr'?corrName(S.sel):'the recommendation';
+  MS={type:'dec',kind:kind,dec:dec,note:''};
+  var R=S.rec, extra='';
+  if(kind==='rec'&&dec==='end'){
+    var nx=null;for(var j=R.cur+1;j<R.endorsers.length;j++){if(R.endorsers[j].st!=='endorsed'){nx=R.endorsers[j];break;}}
+    extra='<div class="sumbox"><div class="sumrow"><span>Next</span><span>'+(nx?'Sent automatically to <b>'+nm(nx.u)+'</b> (endorser '+(R.endorsers.indexOf(nx)+1)+' of '+R.endorsers.length+')':'All endorsers will have endorsed. <b>'+nm(R.finaliser)+'</b> receives the Finalise task.')+'</span></div></div>';
+  }
+  if(kind==='corr'&&dec==='end') extra='<div class="sumbox"><div class="sumrow"><span>Signed off by</span><span>'+nm(S.me)+', '+U[S.me].t+'</span></div><div class="sumrow"><span>Next</span><span>'+nm(OFFICER)+' can mark it sent</span></div></div>';
+  MS.draw=function(){openM(mHead(dec==='end'?'Endorse':'Return')+'<div class="m-body"><p>'+(dec==='end'?'Endorse '+label+'.':'Return '+label+' to '+nm(OFFICER)+'. Tell them what needs to change.')+'</p>'+extra+
+    noteBox(dec==='end'?'Optional notes for the assessing officer':'Why are you returning it?',dec==='ret')+'</div>'+
+    mFoot('dec',dec==='end'?'Endorse':'Return',dec==='end'?'btn-ok':'btn-danger'));};
+  MS.draw();
+}
+function modalMarkSent(){
+  var c=S.corr[S.sel], sig=letterSignatory(c), t=TPL[c.tpl];
+  MS={type:'marksent'};
+  openM(mHead('Mark sent')+'<div class="m-body"><p>Mark <b>'+corrName(S.sel)+'</b> as sent to the applicant?</p><div class="sumbox">'+
+    '<div class="sumrow"><span>Signed off by</span><span>'+nm(sig)+', '+U[sig].t+'</span></div>'+
+    '<div class="sumrow"><span>Type</span><span>'+(t.kind==='request'?'Request &mdash; status becomes <b>Awaiting response</b>':'Notice &mdash; no response needed, so it <b>closes automatically</b>')+'</span></div></div></div>'+mFoot('marksent','Mark sent'));
+}
+function modalClose(){
+  var c=S.corr[S.sel];
+  MS={type:'close',note:''};
+  MS.draw=function(){openM(mHead('Close '+corrName(S.sel))+'<div class="m-body"><p>Are you sure you want to close <b>'+corrName(S.sel)+'</b>?</p>'+
+    '<div class="sumbox">'+c.issues.length+' issues will be recorded as closed</div><p>Record what came of the applicant&rsquo;s response. Your comments stay with this letter and appear beside your recommendation.</p>'+
+    noteBox('e.g. Amended plans received. Setback and height issues resolved; stormwater to be conditioned.',true)+'</div>'+mFoot('close','Confirm'));};
+  MS.draw();
+}
+function modalNewCorr(){
+  MS={type:'newcorr',pick:MS&&MS.pick||'rfi'};
+  var n=S.corr.length+1;
+  MS.draw=function(){openM(mHead('New correspondence')+'<div class="m-body"><p>Choose a template. It sets the title, the default introduction and closing text, and whether a response is required.</p>'+
+    TPL_ORDER.map(function(k){var on=MS.pick===k;return '<div class="pick'+(on?' on':'')+'" data-mpick="'+k+'"><div><div class="nm">'+TPL[k].name+' '+n+'</div><div class="tt">PDF titled &ldquo;'+TPL[k].doc+'&rdquo;</div></div><div class="rt">'+kindChip(k)+'<span class="ck">'+(on?'&#10003;':'')+'</span></div></div>';}).join('')+
+    '<p class="muted" style="font-size:11px;margin-top:8px">Numbering runs across all correspondence on the application, so the next piece is number '+n+' whichever template you choose.</p></div>'+mFoot('newcorr','Create'));};
+  MS.draw();
+}
+function modalEditWarn(c){
+  MS={type:'editwarn'};
+  openM(mHead('Remove endorsement?')+'<div class="m-body"><div class="warnbox">'+I.warn+'<div><b>'+corrName(S.sel)+' has been endorsed by '+nm(c.endorsedBy)+'.</b> Editing it removes the endorsement. You&rsquo;ll need to request authorisation again before you can mark it sent.</div></div><p>Authorisation can take time. Only continue if the change is needed.</p></div>'+
+    mFoot('editwarn','Edit and remove endorsement','btn-danger'));
+}
+function modalAddEnd(){
+  var R=S.rec, have=R.endorsers.map(function(e){return e.u;});
+  var list=Object.keys(U).filter(function(k){return U[k].end && k!==OFFICER && k!==S.me;});
+  MS={type:'addend',picks:[]};
+  MS.draw=function(){openM(mHead('Add endorsers')+'<div class="m-body"><p>Active users with <b>authority to endorse</b>. Selected people are added to the end of the list in the order you pick them.</p>'+
+    list.map(function(k){var already=have.indexOf(k)>=0, ix=MS.picks.indexOf(k);
+      if(already) return '<div class="pick dis">'+av(k,'lg')+'<div><div class="nm">'+nm(k)+'</div><div class="tt">'+U[k].t+'</div></div><div class="rt">Already in the list</div></div>';
+      return '<div class="pick'+(ix>=0?' on':'')+'" data-mpick="'+k+'">'+av(k,'lg')+'<div><div class="nm">'+nm(k)+'</div><div class="tt">'+U[k].t+'</div></div><div class="rt"><span class="ck">'+(ix>=0?(have.length+ix+1):'')+'</span></div></div>';}).join('')+
+    '</div>'+mFoot('addend','Add'+(MS.picks.length?' '+MS.picks.length:''),'btn-primary',!MS.picks.length));};
+  MS.draw();
+}
+function modalReqEnd(){
+  var R=S.rec, ri=R.returned?resumeIdx():0;
+  MS={type:'reqend'};
+  var order=R.endorsers.map(function(e,i){
+    var txt= e.st==='endorsed'?'Already endorsed &mdash; stands':(i===ri?'Receives the request now':'Receives it automatically after endorser '+i+' endorses');
+    return '<div class="sumrow"><span>'+(i+1)+'. '+nm(e.u)+'</span><span>'+txt+'</span></div>';}).join('');
+  openM(mHead(R.returned?'Resume endorsement':'Request endorsement')+'<div class="m-body"><div class="sumbox">'+order+'</div><div class="sumbox">'+
+    '<div class="sumrow"><span>NoD signatory</span><span>'+nm(sigOf())+'</span></div><div class="sumrow"><span>Finalising</span><span>'+nm(R.finaliser)+'</span></div></div>'+
+    '<p>While the recommendation is under review you can&rsquo;t edit the assessment or recommendation. If it is returned, you can edit it and resume from the endorser who returned it.</p></div>'+
+    mFoot('reqend',R.returned?'Resume endorsement':'Request endorsement'));
+}
+function modalFinalise(){
+  var R=S.rec, D=R.det;
+  MS={type:'finalise'};
+  var authTxt=AUTH_NOD[D.authority]+(R.lppRef&&D.authority!=='delegated'?' (LPP ref: '+esc(R.lppRef)+')':'');
+  openM(mHead('Finalise determination')+'<div class="m-body"><div class="warnbox">'+I.warn+'<div><b>This action is irreversible.</b> Once finalised, the determination, reasons and consent details cannot be changed. The assessment is locked to read-only and the application moves to Completed.</div></div><div class="sumbox">'+
+    '<div class="sumrow"><span>Determination</span><span>'+ch(D.determination,D.determination==='Refused'?'c-ret':'c-det')+'</span></div>'+
+    '<div class="sumrow"><span>Determining authority</span><span>'+authTxt+'</span></div>'+
+    (D.authority!=='delegated'&&R.lppDate?'<div class="sumrow"><span>LPP meeting</span><span>'+esc(R.lppDate)+'</span></div>':'')+
+    '<div class="sumrow"><span>Date</span><span>'+esc(R.detDate)+'</span></div><div class="sumrow"><span>Lapses on</span><span>'+addYears(R.detDate,R.duration)+'</span></div>'+
+    '<div class="sumrow"><span>Assessing officer</span><span>'+nm(OFFICER)+'</span></div><div class="sumrow"><span>NoD signatory</span><span>'+nm(sigOf())+', '+U[sigOf()].t+'</span></div>'+
+    '<div class="sumrow"><span>Finalised by</span><span>'+nm(S.me)+'</span></div></div></div>'+mFoot('finalise','Finalise determination'));
+}
+
+/* ============================================================
+   DOCUMENT PREVIEWS — only the parts these stories change
+   ============================================================ */
+var LH='<div class="lh"><div class="cn">North Sydney<br/>Council</div><div class="ad">200 Miller Street, North Sydney NSW 2060<br/>PO Box 12, North Sydney NSW 2059<br/>(02) 9936 8100 &middot; council@northsydney.nsw.gov.au</div></div>';
+function sigBlock(k,dateTxt){return '<div class="sigline"></div><div><b>'+nm(k)+'</b></div><div>'+U[k].t+'</div>'+(dateTxt?'<div>Date: '+dateTxt+'</div>':'');}
+function docModal(title,note,paper){
+  MS={type:'doc'};
+  openM(mHead(title)+'<div class="doc-note">'+note+'</div><div class="paper-wrap"><div class="paper">'+paper+'</div></div>'+
+    '<div class="m-foot"><span class="muted" style="font-size:11px">Preview &mdash; the generated PDF</span><div class="r"><button class="btn-primary" data-mclose="1">Close</button></div></div>',true);
+}
+function docLetter(){
+  var c=S.corr[S.sel], t=TPL[c.tpl], sig=letterSignatory(c);
+  var paper=(sig?'':'<div class="wm">DRAFT</div>')+LH+'<p>'+today()+'</p><p>Waylon Ferry<br/>'+APP.email+'</p>'+
+    '<p><b>Our reference:</b> '+APP.id+' ('+APP.pan+')<br/><b>Property:</b> '+APP.addr+'</p>'+
+    '<h1 style="text-align:left;margin:14px 0 12px" class="hlt">'+t.doc+'</h1><p>Dear Waylon Ferry,</p>'+paras(c.intro)+
+    c.issues.map(function(s,n){return '<h3>'+(n+1)+'. '+s.h+'</h3>'+paras(s.b);}).join('')+paras(c.outro)+
+    '<div class="sig hl"><p>Yours faithfully,</p>'+(sig?sigBlock(sig):'<div class="pend">Not yet authorised. When someone with authority to correspond endorses this letter, it is signed off here with their name and job title.</div>')+'</div>';
+  docModal(corrName(S.sel)+' &mdash; PDF preview','<b>Title, introduction and closing text</b> come from the <b>'+t.name+'</b> template (no longer hard-coded to &ldquo;Request for Information&rdquo;). <b>Sign-off</b> uses the endorser&rsquo;s name and job title, or the officer&rsquo;s own if they hold authority to correspond.',paper);
+}
+function detVals(){
+  var R=S.rec;
+  if(R.det) return {det:R.det.determination,auth:R.det.authority,reasons:R.det.reasons};
+  return {det:REC_TO_DET[R.rec]||'Approved',auth:R.authority,reasons:R.reasons};
+}
+function docNod(){
+  var R=S.rec, v=detVals(), final=(R.phase==='determined');
+  var line2=AUTH_NOD[v.auth]+(v.auth!=='delegated'&&R.lppRef?' (LPP ref: '+esc(R.lppRef)+')':'');
+  var paper=(final?'':'<div class="wm">DRAFT</div>')+LH+
+    '<h1>'+(final?'':'<span class="dr">Draft</span> ')+'Notice of Determination of a Development Application</h1><div class="subh">Pursuant to Section 4.18 of the Environmental Planning and Assessment Act 1979</div>'+
+    '<table class="pt"><tr><td>Application Number:</td><td>'+APP.id+'<br/>PAN: '+APP.pan.replace('PAN-','')+'</td></tr>'+
+    '<tr><td>Land to which this applies:</td><td>'+APP.addr+'<br/>'+APP.lot+'</td></tr>'+
+    '<tr><td>Applicant:</td><td>'+APP.applicant+'</td></tr><tr><td>Description of development:</td><td>'+APP.desc+'</td></tr>'+
+    '<tr class="hl"><td>Determination:</td><td><div class="ln1">'+v.det+'</div><div>'+line2+'</div></td></tr>'+
+    '<tr><td>Date of Determination:</td><td>'+R.detDate+'</td></tr><tr><td>Consent will lapse on:</td><td>'+addYears(R.detDate,R.duration)+'</td></tr></table>'+
+    '<div class="ext">&hellip; reasons and 12 conditions of consent &hellip;</div>'+
+    '<div class="sig hl">'+(final?'<p>Endorsed for and on behalf of North Sydney Council as consent authority.</p>'+sigBlock(sigOf(),today()):
+      '<div class="pend">No signatory is shown until the determination is finalised. On finalising, this block reads &ldquo;Endorsed for and on behalf of North Sydney Council as consent authority&rdquo;, signed by the NoD signatory &mdash; currently <b>'+nm(sigOf())+'</b> &mdash; dated the day the notice is generated.</div>')+'</div>';
+  docModal('Notice of Determination &mdash; PDF preview','<b>Highlighted:</b> the determination statement now reads <b>determination</b> on line 1 and <b>determining authority</b> (plus LPP reference, if entered) on line 2. &ldquo;Draft&rdquo; is printed in the title, and no signatory shown, until the determination is finalised. &ldquo;Determined by&rdquo; and &ldquo;Under delegated authority&rdquo; are removed from the signature block.',paper);
+}
+function docReport(){
+  var R=S.rec, all=(R.phase==='finalise'||R.phase==='determined'), a=endCount();
+  var prep=sigBlock(OFFICER,R.prepDate||'(added when the request is first endorsed)');
+  var ends=all? R.endorsers.map(function(e){return '<div><div>Endorsed by:</div>'+sigBlock(e.u,e.at.split(',')[0])+'</div>';}).join(''):'';
+  var paper=LH+'<h1>Assessment Report</h1><div class="subh">'+APP.id+' &middot; '+APP.addr+'</div><div class="ext">&hellip; assessment commentary, section 4.15 evaluation and recommendation &hellip;</div>'+
+    '<div class="sig hl"><p>In signing this document, I declare that I do not have a conflict of interest.</p><div class="sgrid"><div><div>Prepared by:</div>'+prep+'</div>'+ends+'</div>'+
+    (all?'':'<div class="pend" style="margin-top:16px">Endorsers are added only once every endorser in the endorsement list has endorsed &mdash; '+a+' of '+R.endorsers.length+' so far.</div>')+'</div>';
+  docModal('Assessment report &mdash; signature block preview','<b>Highlighted:</b> &ldquo;[Council name] as consent authority&rdquo; is removed. The preparer&rsquo;s date is the date the request was sent for the first successful endorsement. <b>Every</b> endorser is listed, but only once <b>all</b> of them have endorsed.',paper);
+}
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function mgo(kind){
+  var note=(document.getElementById('m-note')||{}).value||'';
+  var c=S.corr[S.sel], R=S.rec, me=S.me, at;
+  if(kind==='reqauth'){
+    c.status='awaiting'; c.endorser=MS.pick; c.endorsedBy=null; c.returnNote=null;
+    lg(c.log,OFFICER,'Requested authorisation from <b>'+nm(MS.pick)+'</b>',note.trim());
+    toast('Authorisation requested from <b>'+nm(MS.pick)+'</b>. It is in their Review tab.');
+  } else if(kind==='dec'){
+    if(MS.dec==='ret'&&!note.trim()){document.getElementById('m-err').classList.add('on');document.getElementById('m-note').classList.add('bad');return;}
+    if(MS.kind==='corr'){
+      if(MS.dec==='end'){ c.status='endorsed'; c.endorsedBy=me; lg(c.log,me,'<b>Endorsed</b>',note.trim()); toast('Endorsed. '+nm(OFFICER)+' can now mark '+corrName(S.sel)+' sent.'); }
+      else { at=now(); c.status='returned'; c.returnNote={by:me,at:at,note:note.trim()}; c.log.push({at:at,who:me,what:'<b>Returned</b>',note:note.trim()}); toast('Returned to '+nm(OFFICER)+'.'); }
+      S.done[me].push({type:'Correspondence',label:corrName(S.sel),dec:MS.dec==='end'?'Endorsed':'Returned',at:today()});
+    } else {
+      var e=R.endorsers[R.cur]; at=now();
+      if(MS.dec==='end'){
+        e.st='endorsed'; e.at=at; e.note=note.trim(); if(!R.prepDate) R.prepDate=(R.lastSent||at).split(',')[0];
+        var nx=-1; for(var j=R.cur+1;j<R.endorsers.length;j++){if(R.endorsers[j].st!=='endorsed'){nx=j;break;}}
+        if(nx>=0){ R.cur=nx; R.endorsers[nx].st='notstarted';
+          R.log.push({at:at,who:me,what:'<b>Endorsed</b> &mdash; sent automatically to '+nm(R.endorsers[nx].u)+' ('+(nx+1)+' of '+R.endorsers.length+')',note:e.note});
+          toast('Endorsed. Sent automatically to <b>'+nm(R.endorsers[nx].u)+'</b>.'); }
+        else { R.log.push({at:at,who:me,what:'<b>Endorsed</b> &mdash; all endorsers have endorsed. Sent to '+nm(R.finaliser)+' to finalise.',note:e.note});
+          enterFinalise(); if(S.me!==R.finaliser) S.aTab='rec';
+          toast('Endorsed. All endorsers have endorsed &mdash; <b>'+nm(R.finaliser)+'</b> has a Finalise task.'); }
+      } else {
+        e.st='returned'; e.at=at; e.note=note.trim(); R.phase='draft'; R.returned=true;
+        R.log.push({at:at,who:me,what:'<b>Returned</b>',note:e.note});
+        toast('Returned to '+nm(OFFICER)+'.');
+      }
+      S.done[me].push({type:'Recommendation',label:'Recommendation',dec:MS.dec==='end'?'Endorsed':'Returned',at:today()});
+    }
+  } else if(kind==='marksent'){
+    if(!c.endorsedBy) c.endorsedBy=OFFICER;
+    c.sentAt=now(); c.status=TPL[c.tpl].kind==='request'?'awaiting_response':'sent';
+    lg(c.log,OFFICER,'Marked sent'+(c.endorsedBy===OFFICER?' &mdash; signed off under own authority to correspond':'')+(c.status==='sent'?' &mdash; notice closed automatically':''));
+    toast(corrName(S.sel)+(c.status==='sent'?' sent and closed.':' sent. Awaiting response.'));
+  } else if(kind==='close'){
+    if(!note.trim()){document.getElementById('m-err').classList.add('on');document.getElementById('m-note').classList.add('bad');return;}
+    at=now(); c.status='closed'; c.closing={by:OFFICER,at:at,note:note.trim()};
+    c.log.push({at:at,who:OFFICER,what:'Closed '+corrName(S.sel)+' &mdash; '+c.issues.length+' issues recorded as closed'});
+    toast(corrName(S.sel)+' closed. Your comments appear beside the recommendation.');
+  } else if(kind==='newcorr'){
+    S.corr.push(newCorr(MS.pick,[],now())); S.sel=S.corr.length-1; S.edit=null;
+    toast(corrName(S.sel)+' created.');
+  } else if(kind==='editwarn'){
+    var who_=c.endorsedBy; c.status='draft'; c.endorsedBy=null;
+    lg(c.log,OFFICER,'Edited after endorsement &mdash; <b>endorsement by '+nm(who_)+' removed</b>');
+    closeM(); if(PENDING){var f=PENDING;PENDING=null;f();} else render(); return;
+  } else if(kind==='addend'){
+    MS.picks.forEach(function(k){R.endorsers.push({u:k,st:'queued',at:null,note:''});});
+    if(isCurReviewer()) lg(R.log,me,'Added '+MS.picks.map(nm).join(', ')+' to the endorsement list');
+    toast('Added to the endorsement list.');
+  } else if(kind==='reqend'){
+    var ri=R.returned?resumeIdx():0; at=now();
+    R.endorsers.forEach(function(x,j){if(j>ri&&x.st!=='endorsed'){x.st='queued';x.at=null;x.note='';}});
+    var t=R.endorsers[ri]; t.st='notstarted'; t.at=null; t.note='';
+    R.cur=ri; R.phase='review'; R.lastSent=at; if(!R.firstSent) R.firstSent=at;
+    R.log.push({at:at,who:OFFICER,what:(R.returned?'Resumed endorsement with <b>'+nm(t.u)+'</b>':'Requested endorsement &mdash; '+R.endorsers.map(function(x){return '<b>'+nm(x.u)+'</b>';}).join(', then ')+'. NoD signatory: '+nm(sigOf())+'. Finalising: '+nm(R.finaliser)+'.'),note:''});
+    R.returned=false;
+    toast('Endorsement requested from <b>'+nm(t.u)+'</b>. Status: Under review.');
+  } else if(kind==='finalise'){
+    at=now(); R.phase='determined'; R.finalisedBy=me; R.finalisedAt=at;
+    R.log.push({at:at,who:me,what:'<b>Finalised determination</b> &mdash; '+R.det.determination+', '+AUTH_NOD[R.det.authority]});
+    if(S.done[me]) S.done[me].push({type:'Finalise',label:'Determination',dec:'Finalised',at:today()});
+    S.aTab='det';
+    toast('Determination finalised. Final report and Notice of Determination are ready.');
+  }
+  closeM(); render();
+}
+
+function act(a){
+  var c=S.corr[S.sel], R=S.rec, me=S.me;
+  switch(a){
+    case 'newcorr': MS=null; modalNewCorr(); break;
+    case 'reqauth': MS=null; modalReqAuth(); break;
+    case 'marksent': modalMarkSent(); break;
+    case 'closecorr': modalClose(); break;
+    case 'startcorr': c.status='review'; lg(c.log,me,'Started review'); toast('Review started. '+nm(OFFICER)+' can see you&rsquo;re reviewing.'); render(); break;
+    case 'endcorr': modalDecision('corr','end'); break;
+    case 'retcorr': modalDecision('corr','ret'); break;
+    case 'letterpdf': docLetter(); break;
+    case 'nodpdf': docNod(); break;
+    case 'reportpdf': docReport(); break;
+    case 'edcancel': S.edit=null; render(); break;
+    case 'edsave': saveEdit(); break;
+    case 'addissue': c.issues.push({h:'New issue',by:me,at:now(),b:['Describe the matter and what the applicant needs to provide.']}); S.edit={part:c.issues.length-1}; render(); break;
+    case 'startrec': R.endorsers[R.cur].st='review'; lg(R.log,me,'Started review'); toast('Review started. Status is now Under review.'); render(); break;
+    case 'endrec': modalDecision('rec','end'); break;
+    case 'retrec': modalDecision('rec','ret'); break;
+    case 'addend': modalAddEnd(); break;
+    case 'reqend': modalReqEnd(); break;
+    case 'finalise': modalFinalise(); break;
+    case 'save': toast('Saved'); break;
+    case 'newwin': openNewWindow(); break;
+  }
+}
+function openNewWindow(){
+  try{ var url=location.href.split('#')[0]+'#w='+encodeURIComponent(JSON.stringify({S:Object.assign({},S,{screen:'ov',me:S.me}),CLK:CLK}));
+       var w=window.open(url,'_blank'); if(!w) toast('Pop-up blocked &mdash; allow pop-ups to open the application alongside.'); else toast('Application overview opened in a new window.'); }
+  catch(e){ toast('Could not open a new window here.'); }
+}
+
+/* ============================================================
+   RENDER + NAVIGATION
+   ============================================================ */
+var PLAB={sean:'Sean &middot; Officer',nadine:'Nadine &middot; Endorser',braden:'Braden &middot; Endorser',kate:'Kate &middot; Admin'};
+function render(){
+  document.getElementById('top-av').innerHTML=av(S.me,'md');
+  document.getElementById('top-name').innerHTML=U[S.me].n+'<span class="user-role">'+U[S.me].t+'</span>';
+  document.querySelectorAll('#seg-screen button').forEach(function(b){b.classList.toggle('on',b.dataset.screen===S.screen);});
+  document.getElementById('seg-me').innerHTML=PERSONAS.map(function(k){return '<button data-me="'+k+'" class="'+(S.me===k?'on':'')+'">'+PLAB[k]+'</button>';}).join('');
+  document.querySelectorAll('#seg-auth button').forEach(function(b){b.classList.toggle('on',(b.dataset.a==='1')===S.seanCorr);});
+  document.querySelectorAll('#seg-pre button').forEach(function(b){b.classList.toggle('on',(b.dataset.p==='1')===S.prereq);});
+  document.getElementById('grp-auth').classList.toggle('hidden',S.screen!=='corr');
+  document.getElementById('grp-pre').classList.toggle('hidden',['assess','ov'].indexOf(S.screen)<0);
+  var nav={dash:'dash',apps:'apps',ov:'apps',corr:'apps',assess:'apps'}[S.screen];
+  document.querySelectorAll('.sidebar-item[data-nav]').forEach(function(b){b.classList.toggle('active',b.dataset.nav===nav);});
+  if(S.me==='kate'&&S.dashTab==='review') S.dashTab='active';
+  ({dash:renderDash,apps:renderApps,ov:renderOv,corr:renderCorr,assess:renderAssess})[S.screen]();
+}
+function go(s){S.screen=s;S.edit=null;render();window.scrollTo(0,0);}
+
+/* ---------- control bar ---------- */
+document.getElementById('seg-screen').addEventListener('click',function(e){var b=e.target.closest('button');if(b) go(b.dataset.screen);});
+document.getElementById('seg-me').addEventListener('click',function(e){var b=e.target.closest('button');if(!b) return;S.me=b.dataset.me;S.edit=null;render();});
+document.getElementById('seg-auth').addEventListener('click',function(e){var b=e.target.closest('button');if(!b) return;S.seanCorr=(b.dataset.a==='1');render();});
+document.getElementById('seg-pre').addEventListener('click',function(e){var b=e.target.closest('button');if(!b) return;S.prereq=(b.dataset.p==='1');render();});
+var jump=document.getElementById('jump');
+jump.innerHTML='<option value="">Jump to scenario&hellip;</option>'+PRESETS.map(function(p){return '<option value="'+p.k+'">'+p.t+'</option>';}).join('')+'<option value="__reset">Reset prototype</option>';
+jump.addEventListener('change',function(){var v=jump.value;if(!v) return;
+  if(v==='__reset'){S=base();CLK={h:9,m:0};toast('Prototype reset');}
+  else {preset(v);var p=PRESETS.filter(function(x){return x.k===v;})[0];toast(p.t.replace(/^\d · /,''));}
+  jump.value=''; closeM(); render(); window.scrollTo(0,0);});
+document.querySelectorAll('.sidebar-item[data-nav]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.nav);});});
+
+/* ---------- page events ---------- */
+document.addEventListener('click',function(e){
+  var t=e.target, el;
+  if(t.closest('#keypanel')){ el=t.closest('[data-jump]'); if(el){ preset(el.dataset.jump); closeM(); render(); window.scrollTo(0,0); } return; }
+  if(t.closest('[data-mclose]')||t===mask){closeM();return;}
+  if((el=t.closest('[data-mpick]'))){var k=el.dataset.mpick;
+    if(MS.type==='addend'){var ix=MS.picks.indexOf(k);if(ix>=0)MS.picks.splice(ix,1);else MS.picks.push(k);} else MS.pick=k;
+    reM();return;}
+  if((el=t.closest('[data-mgo]'))){mgo(el.dataset.mgo);return;}
+  if(t.closest('.mask')) return;
+  if((el=t.closest('[data-dtab]'))){S.dashTab=el.dataset.dtab;render();return;}
+  if((el=t.closest('[data-atab2]'))){S.appsTab=el.dataset.atab2;render();return;}
+  if((el=t.closest('[data-act]'))){act(el.dataset.act);return;}
+  if((el=t.closest('[data-as]'))){S.aTab=el.dataset.as;render();window.scrollTo(0,0);return;}
+  if((el=t.closest('[data-open]'))){var o=el.dataset.open; if(el.dataset.sel!==undefined) S.sel=+el.dataset.sel;
+    if(o==='assess'){var R=S.rec;S.aTab=el.dataset.at||((R.phase==='determined'||(R.phase==='finalise'&&S.me===R.finaliser))?'det':'rec');}
+    go(o);return;}
+  if((el=t.closest('[data-static]'))){toast('Static row. The walkthrough uses <b>'+APP.id+'</b>.');return;}
+  if((el=t.closest('[data-goto]'))){go(el.dataset.goto);return;}
+  if((el=t.closest('.cr-item[data-sel]'))){S.sel=+el.dataset.sel;S.edit=null;render();return;}
+  if((el=t.closest('[data-ed]'))){var part=el.dataset.ed; part=(part==='intro'||part==='outro')?part:+part;
+    guardEdit(function(){S.edit={part:part};render();var b=document.getElementById('edbody');if(b)b.focus();});return;}
+  if((el=t.closest('[data-mv]'))){var mv=el.dataset.mv.split('|'),n=+mv[0],d=+mv[1];
+    guardEdit(function(){var c=S.corr[S.sel],x=c.issues[n];c.issues.splice(n,1);c.issues.splice(n+d,0,x);logRev(c,'Moved <b>'+x.h+'</b> '+(d<0?'up':'down'));render();});return;}
+  if((el=t.closest('[data-rm]'))){var rn=+el.dataset.rm;
+    guardEdit(function(){var c=S.corr[S.sel],x=c.issues[rn];c.issues.splice(rn,1);logRev(c,'Removed issue <b>'+x.h+'</b>');toast('Removed &ldquo;'+x.h+'&rdquo; from the letter');render();});return;}
+  if((el=t.closest('[data-auth]'))){var R1=S.rec;R1.authority=(R1.authority===el.dataset.auth?null:el.dataset.auth);revLog('auth','Determining authority');render();return;}
+  if((el=t.closest('[data-rec]'))){var R2=S.rec;R2.rec=(R2.rec===el.dataset.rec?null:el.dataset.rec);revLog('rec','Recommendation');render();return;}
+  if((el=t.closest('[data-dauth]'))){S.rec.det.authority=el.dataset.dauth;render();return;}
+  if((el=t.closest('[data-ddet]'))){S.rec.det.determination=el.dataset.ddet;render();return;}
+  if((el=t.closest('[data-rmend]'))){var R3=S.rec,i=+el.dataset.rmend,u=R3.endorsers[i].u;R3.endorsers.splice(i,1);if(R3.signatory===u)R3.signatory=null;
+    if(isCurReviewer()) lg(R3.log,S.me,'Removed '+nm(u)+' from the endorsement list');
+    if(!R3.endorsers.some(function(x){return x.st==='returned';})) R3.returned=R3.returned&&false;
+    toast(nm(u)+' removed from the endorsement list');render();return;}
+  if((el=t.closest('.collap-h'))){var host=el.closest('[data-shut]');if(host){var id=host.dataset.shut;S.shut[id]=!host.classList.contains('shut');render();}return;}
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='tplsel'){var c=S.corr[S.sel];c.tpl=t.value;c.intro=TPL[t.value].intro.slice();c.outro=TPL[t.value].outro.slice();
+    toast('Now a <b>'+TPL[t.value].name+'</b> ('+(TPL[t.value].kind==='request'?'request':'notice')+'). Named '+corrName(S.sel)+'; introduction and closing text replaced with its defaults.');render();}
+  if(t.id==='sel-sig'){S.rec.signatory=t.value;if(isCurReviewer())lg(S.rec.log,S.me,'Changed NoD signatory to '+nm(t.value));toast('NoD signatory: '+nm(t.value));render();}
+  if(t.id==='sel-fin'){S.rec.finaliser=t.value;toast('Responsible for finalising: '+nm(t.value));render();}
+  if(t.id==='in-dur'){S.rec.duration=+t.value||S.rec.duration;revLog('dur','Consent duration');render();}
+  if(t.id==='in-lppdate'){S.rec.lppDate=t.value;}
+  if(t.id==='in-lppref'){S.rec.lppRef=t.value;render();}
+  if(t.id==='in-ddate'){S.rec.detDate=t.value||S.rec.detDate;render();}
+});
+document.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.id==='ed-reasons'){S.rec.reasons=t.innerHTML;revLog('reasons','Reasons for recommendation');}
+  if(t.id==='ed-exec'){S.rec.exec=t.innerHTML;revLog('exec','Executive summary');}
+  if(t.id==='ed-dreasons'){S.rec.det.reasons=t.innerHTML;}
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&mask.classList.contains('on'))closeM();});
+
+/* ============================================================
+   KEY PANEL — story map, statuses, decisions
+   ============================================================ */
+var kp=document.getElementById('keypanel');
+function J(k,t){return '<a data-jump="'+k+'">'+t+'</a>';}
+kp.innerHTML=
+ '<div class="key-h">How to walk through</div>'+
+ '<div class="key-row"><span>Live, one record</span><span>Everything happens on <b>'+APP.id+'</b>. Use <b>Viewing as</b> to switch between Sean (assessing officer), Nadine and Braden (endorsers) and Kate (administration). Actions carry across personas. <b>Jump to scenario</b> drops you at any step.</span></div>'+
+ '<div class="key-h">Stories &rarr; where to see them</div>'+
+ '<div class="key-row"><span>Flexible correspondence options</span><span>Template picker on a draft: RFI letter (request) or Return letter (notice). Name, PDF title, intro and closing text follow the template. <b>New</b> creates the next number across all correspondence. '+J('start','Go')+'</span></div>'+
+ '<div class="key-row"><span>Record comments when closing</span><span>Close RFI letter 1 &mdash; comments are required and stay on the letter and in Assessment &rsaquo; Correspondence outcomes. '+J('corrSent','Go')+'</span></div>'+
+ '<div class="key-row"><span>Request correspondence authorisation</span><span>Authority banner, Mark sent disabled with hover reason, Request authorisation picker, status updates, edit-after-endorsement warning, authorisation log. Toggle <b>Sean&rsquo;s authority to correspond</b> for the other path. '+J('start','Go')+'</span></div>'+
+ '<div class="key-row"><span>Respond to correspondence authorisation</span><span>Nadine&rsquo;s Review tab &rarr; Start review &rarr; edit, reorder or remove issues (try the duplicate Streetscape) &rarr; Endorse or Return. Completed reviews land under Completed &rsaquo; Reviews. '+J('corrReq','Go')+'</span></div>'+
+ '<div class="key-row"><span>Fix: NoD determination statement</span><span>Create Notice PDF. Line 1 determination, line 2 determining authority + LPP reference. '+J('fin','Go')+'</span></div>'+
+ '<div class="key-row"><span>Fix: NoD and report signature blocks</span><span>Create Report PDF and Create Notice PDF. Endorsers appear only once all have endorsed; NoD shows Draft and no signatory until finalised. '+J('end1','Partly endorsed')+' &middot; '+J('det','Finalised')+'</span></div>'+
+ '<div class="key-row"><span>Request recommendation endorsement</span><span>Endorsement and sign off card: endorsement list, NoD signatory, who finalises, readiness checks gating the request, lock while under review, return &amp; resume. '+J('ready','Go')+' &middot; '+J('ret','Returned')+'</span></div>'+
+ '<div class="key-row"><span>Respond to recommendation endorsement</span><span>Review tab &rarr; Start review &rarr; edit as the officer could, add endorsers, open the application in a new window &rarr; Endorse or Return. '+J('rev1','Go')+'</span></div>'+
+ '<div class="key-row"><span>Finalise determination</span><span>Kate&rsquo;s Active tab shows <b>Finalise</b> in urgent red. Determination tab: confirm, add LPP meeting date and reference, finalise, print final documents. The Assessment panel then lands on Determination. '+J('fin','Go')+'</span></div>'+
+ '<div class="key-row"><span>Recommendation status in lists</span><span>Dashboard and All applications: column renamed Recommendation. Finalise is urgent and greys every other status chip in the row. Try selecting a local planning panel to see the LPP suffix.</span></div>'+
+ '<div class="key-h">Recommendation statuses</div>'+
+ '<div class="key-row"><span>'+recChip({k:'ns',label:'Not started'})+'</span><span>No checklist created.</span></div>'+
+ '<div class="key-row"><span>'+recChip({k:'ip',label:'In progress'})+'</span><span>Checklist created; also after a Return.</span></div>'+
+ '<div class="key-row"><span>'+recChip({k:'made',label:'Made'})+'</span><span>Recommendation selected, not yet sent for endorsement.</span></div>'+
+ '<div class="key-row"><span>'+recChip({k:'rev',label:'Under review (1/2)'})+'</span><span>With endorser 1 of 2. Locked for the officer.</span></div>'+
+ '<div class="key-row"><span>'+recChip({k:'end',label:'Endorsed (1/2)'})+'</span><span>1 of 2 endorsed; the next endorser hasn&rsquo;t started reviewing yet.</span></div>'+
+ '<div class="key-row"><span>'+recChip({k:'fin',label:'Finalise'})+'</span><span>Every endorser has endorsed. Urgent; greys the other chips in the row.</span></div>'+
+ '<div class="key-row"><span>'+recChip({k:'made',label:'Made LPP'})+'</span><span>Suffix when the determining authority is a local planning panel.</span></div>'+
+ '<div class="key-h">Correspondence statuses</div>'+
+ '<div class="key-row"><span>'+corrChip('draft')+'</span><span>Being written. '+corrChip('returned')+' when sent back by the reviewer.</span></div>'+
+ '<div class="key-row"><span>'+corrChip('awaiting')+'</span><span>Requested, reviewer not started. Then '+corrChip('review')+'.</span></div>'+
+ '<div class="key-row"><span>'+corrChip('endorsed')+'</span><span>Signed off, ready to send. Editing removes the endorsement.</span></div>'+
+ '<div class="key-row"><span>'+corrChip('awaiting_response')+'</span><span>Request sent. Closed with comments: '+corrChip('closed')+'.</span></div>'+
+ '<div class="key-row"><span>'+corrChip('sent')+'</span><span>Notice sent. Needs no response, so it closes itself.</span></div>'+
+ '<div class="key-h">Decisions in this version (08 Nov 2026)</div>'+
+ '<div class="key-row"><span>Reviewer edits</span><span>Endorsers can edit in both flows. Logged as &ldquo;edited X&rdquo; &mdash; no change-by-change diff.</span></div>'+
+ '<div class="key-row"><span>NoD signatory</span><span>One role: the person chosen to sign the NoD (the stories&rsquo; &ldquo;correspondence endorser&rdquo;). Defaults to the first endorser.</span></div>'+
+ '<div class="key-row"><span>Auto-routing</span><span>When an endorser endorses, the next receives the request automatically. Returns resume at the returner.</span></div>'+
+ '<div class="key-row"><span>Dashboard</span><span>Determine tab renamed Review. Finalise stays in Active with an urgent chip.</span></div>'+
+ '<div class="key-row"><span>Templates</span><span>RFI letter and Return letter. The template sets request vs notice. Numbering is global. Notices close automatically.</span></div>'+
+ '<div class="key-row"><span>Start review</span><span>Added to correspondence too, so the officer sees when review starts.</span></div>'+
+ '<div class="key-row"><span>Determination page</span><span>Replaces the Formalise determination modal. LPP meeting date and reference captured here.</span></div>'+
+ '<div class="key-f"><b>Prototype notes.</b> The fixture record has moved to a North Sydney address so the letterhead and NoD read correctly in the North Sydney walkthrough. Only '+APP.id+' is live; other rows are static. The RFI Letter column is renamed Correspondence to match template naming. Closing comments are required. Out of scope: digital signatures, change-by-change diffs, response durations and a Received response status.</div>';
+document.getElementById('btn-key').addEventListener('click',function(){var o=kp.classList.toggle('open');this.classList.toggle('on',o);});
+
+/* ---------- gate (courtesy screen, not security) + boot ---------- */
+(function(){
+  var gate=document.getElementById('gate'),pw=document.getElementById('gate-pw'),go_=document.getElementById('gate-go'),err=document.getElementById('gate-err');
+  var h=location.hash||'';
+  if(h.indexOf('#w=')===0){
+    try{var o=JSON.parse(decodeURIComponent(h.slice(3)));S=o.S;CLK=o.CLK;}catch(e){}
+    gate.classList.add('done');
+  } else document.body.classList.add('locked');
+  setTimeout(function(){if(!gate.classList.contains('done'))pw.focus();},60);
+  function attempt(){
+    if(pw.value.trim().toLowerCase()==='objective2026'){gate.classList.add('done');document.body.classList.remove('locked');return;}
+    err.classList.add('show');pw.classList.add('bad');pw.select();
+  }
+  go_.addEventListener('click',attempt);
+  pw.addEventListener('keydown',function(e){if(e.key==='Enter')attempt();});
+  pw.addEventListener('input',function(){err.classList.remove('show');pw.classList.remove('bad');});
+})();
+render();
+</script>
+<script src="https://build-au-feedback-widget.vercel.app/feedback-widget.js"></script>
+</body>
+</html>
