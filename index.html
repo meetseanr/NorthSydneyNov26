@@ -1002,7 +1002,7 @@ function renderOv(){
 
   var crows=S.corr.map(function(c,i){return '<tr class="click" data-open="corr" data-sel="'+i+'" style="cursor:pointer"><td style="color:var(--ink);font-weight:500">'+corrName(i)+'</td><td>'+(TPL[c.tpl].kind==='request'?'Request':'Notice')+'</td><td>'+c.issues.length+'</td><td>'+corrChip(c.status)+'</td></tr>';}).join('');
   var corr='<div class="ov-card focus"><span class="focus-tag">Changed</span><div class="ov-head"><span class="ov-title">Correspondence ('+S.corr.length+')</span>'+
-    '<button class="btn-out" data-open="corr">'+I.plus+'Add issue</button></div><div class="ov-body">'+
+    addIssueBtn()+'</div><div class="ov-body">'+
     '<table class="mini"><thead><tr><th>Correspondence</th><th>Type</th><th>Issues</th><th>Status</th></tr></thead><tbody>'+crows+'</tbody></table>'+
     '<button class="btn-out btn-wide" data-open="corr">View correspondence</button></div></div>';
 
@@ -1062,7 +1062,7 @@ function renderCorr(){
 
   /* ---- left list ---- */
   var left='<div class="cr-left"><div class="cr-left-h"><b>Correspondence</b>'+
-    (isOff?'<button class="btn-out" data-act="newcorr">'+I.plus+'New</button>':'')+'</div>'+
+    '</div>'+
     S.corr.map(function(x,j){
       var on=(j===i);
       var iss=on? x.issues.map(function(s){return '<div class="cr-iss">'+av(s.by)+'<span>'+s.h+'</span></div>';}).join(''):'';
@@ -1145,11 +1145,11 @@ function renderCorr(){
       (editing?'<input class="htitle" id="edtitle" value="'+esc(s.h)+'"/><div class="lbox ed" contenteditable="true" id="edbody">'+paras(s.b)+'</div><div class="edbar"><button class="btn-flat" data-act="edcancel">Cancel</button><button class="btn-primary" data-act="edsave">Save</button></div>'
               :'<div class="lbox">'+paras(s.b)+'</div>')+'</div></div>';
   }).join('');
-  var addIssue=(isOff&&(c.status==='draft'||c.status==='returned'))?'<button class="btn-out" data-act="addissue" style="margin-bottom:12px">'+I.plus+'Add issue</button>':'';
+  var addIssue='';
 
   var meta=c.issues.length+' issue'+(c.issues.length===1?'':'s')+' &middot; Draft created '+c.created+(c.sentAt?' &middot; Marked sent '+c.sentAt:'');
   document.getElementById('page').innerHTML='<div class="crumb"><a data-goto="apps">Applications</a> / <a data-goto="ov">Application '+APP.id+'</a></div>'+
-    '<div class="page-head"><div class="page-title">'+I.back.replace('class="back"','class="back" data-goto="ov"')+'Correspondence</div></div><div class="gap"></div>'+
+    '<div class="page-head"><div class="page-title">'+I.back.replace('class="back"','class="back" data-goto="ov"')+'Manage correspondence</div>'+addIssueBtn()+'</div><div class="gap"></div>'+
     '<div class="panel"><div class="cr-wrap">'+left+'<div class="cr-right">'+
       '<div class="cr-head"><div><div class="cr-name">'+name+corrChip(c.status)+kindChip(c.tpl)+'</div><div class="cr-meta">'+meta+'</div></div><div class="cr-acts">'+acts+'</div></div>'+
       '<div class="cr-body">'+b+tpl+out+log+partCard('intro','Introduction',c.intro)+issues+addIssue+partCard('outro','Closing instructions',c.outro)+'</div>'+
@@ -1173,6 +1173,33 @@ function saveEdit(){
   else if(e.part==='outro'){ c.outro=ps; logRev(c,'Edited the <b>closing instructions</b>'); }
   else { var s=c.issues[e.part]; var h=document.getElementById('edtitle').value||s.h; logRev(c,'Edited issue <b>'+esc(s.h)+'</b>'+(h!==s.h?' (renamed '+esc(h)+')':'')); s.h=h; s.b=ps; if(c.endorser===S.me&&c.status==='review') s.editedBy=S.me; }
   S.edit=null; render(); toast('Saved');
+}
+
+/* ---- + Add issue (as in the original design) ----
+   Adds the issue to the open draft. If there is no open draft, it starts
+   the next correspondence round (RFI letter by default; the officer can
+   switch template on the draft). Unavailable while a piece is with a reviewer. */
+function busyCorr(){for(var i=0;i<S.corr.length;i++){var st=S.corr[i].status;if(st==='awaiting'||st==='review') return i;}return -1;}
+function openCorr(){for(var i=0;i<S.corr.length;i++){var st=S.corr[i].status;if(st==='draft'||st==='returned'||st==='endorsed') return i;}return -1;}
+function addIssueBtn(){
+  if(S.me!==OFFICER) return '';
+  var b=busyCorr();
+  if(b>=0) return disWrap('<button class="btn-out" disabled>'+I.plus+'Add issue</button>','<b>'+corrName(b)+' is with '+nm(S.corr[b].endorser)+'</b>Issues can be added once it is endorsed or returned.');
+  var o=openCorr();
+  return '<button class="btn-out" data-act="addissue" data-tip="'+(o>=0?'Adds an issue to <b>'+corrName(o)+'</b>':'Starts <b>RFI letter '+(S.corr.length+1)+'</b> with this issue. You can change the template on the draft.')+'">'+I.plus+'Add issue</button>';
+}
+function addIssue(){
+  if(S.me!==OFFICER||busyCorr()>=0) return;
+  var o=openCorr(), started=false;
+  if(o<0){ S.corr.push(newCorr('rfi',[],now())); o=S.corr.length-1; started=true; }
+  S.sel=o; S.screen='corr'; S.edit=null; render(); window.scrollTo(0,0);
+  guardEdit(function(){
+    var c=S.corr[S.sel];
+    c.issues.push({h:'New issue',by:OFFICER,at:now(),b:['Describe the matter and what the applicant needs to provide.']});
+    S.edit={part:c.issues.length-1}; render();
+    var t=document.getElementById('edtitle'); if(t){t.scrollIntoView({block:'center'}); t.select();}
+    toast(started?corrName(S.sel)+' started with a new issue. Change the template on the draft if this is not an RFI.':'Issue added to '+corrName(S.sel)+'.');
+  });
 }
 
 /* ============================================================
@@ -1327,15 +1354,14 @@ function endorseCard(){
 }
 
 function sideRail(){
-  var outs=S.corr.map(function(c,i){
-    return '<div class="side-out"><div class="h">'+corrName(i)+corrChip(c.status)+'</div>'+
-      (c.closing?'<div class="x">'+esc(c.closing.note)+'</div><div class="m">Closing comments &middot; '+nm(c.closing.by)+' &middot; '+c.closing.at+'</div>'
-                :'<div class="m">No closing comments yet.</div>')+'</div>';}).join('');
+  var outs='<table class="mini"><thead><tr><th>Correspondence</th><th>Issues</th><th>Status</th></tr></thead><tbody>'+S.corr.map(function(c,i){
+    return '<tr class="click" data-open="corr" data-sel="'+i+'" style="cursor:pointer"><td style="color:var(--ink);font-weight:500">'+corrName(i)+'</td><td>'+c.issues.length+'</td><td>'+corrChip(c.status)+'</td></tr>';}).join('')+'</tbody></table>'+
+    '<button class="btn-out btn-wide" data-open="corr">View correspondence</button>';
   function sec(id,title,body,def){var shut=(S.shut[id]===undefined?def:S.shut[id]);
     return '<div class="side-sec'+(shut?' shut':'')+'" data-shut="'+id+'"><div class="collap-h">'+title+I.chev+'</div><div class="collap-b">'+body+'</div></div>';}
   return '<aside class="panel as-side">'+
     sec('s-app','Application detail',kv('Submitted',APP.submitted)+kv('Application',APP.id)+kv('Address',APP.addr)+kv('Application type','Development application')+kv('EDC (ex GST)',APP.edc)+kv('Description',APP.desc)+kv('Applicant name',APP.applicant),false)+
-    sec('s-corr','Correspondence outcomes <span class="new-tag" style="margin-left:6px">New</span>',outs,false)+
+    sec('s-corr','Correspondence',outs,false)+
     sec('s-map','Map preview','<div class="mapbox" style="height:150px"><span class="lot">R2</span></div>',true)+
     sec('s-plan','Planning summary',kv('LEP','North Sydney LEP 2013')+kv('Land zoning','R2: Low Density Residential'),true)+
     sec('s-docs','Portal documents (9)','<div class="doc"><span class="pdf">PDF</span>Amended Plans 04-11-2026.pdf</div>',true)+
@@ -1415,7 +1441,7 @@ function modalClose(){
   var c=S.corr[S.sel];
   MS={type:'close',note:''};
   MS.draw=function(){openM(mHead('Close '+corrName(S.sel))+'<div class="m-body"><p>Are you sure you want to close <b>'+corrName(S.sel)+'</b>?</p>'+
-    '<div class="sumbox">'+c.issues.length+' issues will be recorded as closed</div><p>Record what came of the applicant&rsquo;s response. Your comments stay with this letter and appear beside your recommendation.</p>'+
+    '<div class="sumbox">'+c.issues.length+' issues will be recorded as closed</div><p>Record what came of the applicant&rsquo;s response. Your comments stay with this letter for reference when you write your recommendation.</p>'+
     noteBox('e.g. Amended plans received. Setback and height issues resolved; stormwater to be conditioned.',true)+'</div>'+mFoot('close','Confirm'));};
   MS.draw();
 }
@@ -1559,7 +1585,7 @@ function mgo(kind){
     if(!note.trim()){document.getElementById('m-err').classList.add('on');document.getElementById('m-note').classList.add('bad');return;}
     at=now(); c.status='closed'; c.closing={by:OFFICER,at:at,note:note.trim()};
     c.log.push({at:at,who:OFFICER,what:'Closed '+corrName(S.sel)+' &mdash; '+c.issues.length+' issues recorded as closed'});
-    toast(corrName(S.sel)+' closed. Your comments appear beside the recommendation.');
+    toast(corrName(S.sel)+' closed. Your comments are saved with the letter.');
   } else if(kind==='newcorr'){
     S.corr.push(newCorr(MS.pick,[],now())); S.sel=S.corr.length-1; S.edit=null;
     toast(corrName(S.sel)+' created.');
@@ -1604,7 +1630,7 @@ function act(a){
     case 'reportpdf': docReport(); break;
     case 'edcancel': S.edit=null; render(); break;
     case 'edsave': saveEdit(); break;
-    case 'addissue': c.issues.push({h:'New issue',by:me,at:now(),b:['Describe the matter and what the applicant needs to provide.']}); S.edit={part:c.issues.length-1}; render(); break;
+    case 'addissue': addIssue(); break;
     case 'startrec': R.endorsers[R.cur].st='review'; lg(R.log,me,'Started review'); toast('Review started. Status is now Under review.'); render(); break;
     case 'endrec': modalDecision('rec','end'); break;
     case 'retrec': modalDecision('rec','ret'); break;
@@ -1718,8 +1744,8 @@ kp.innerHTML=
  '<div class="key-h">How to walk through</div>'+
  '<div class="key-row"><span>Live, one record</span><span>Everything happens on <b>'+APP.id+'</b>. Use <b>Viewing as</b> to switch between Sean (assessing officer), Nadine and Braden (endorsers) and Kate (administration). Actions carry across personas. <b>Jump to scenario</b> drops you at any step.</span></div>'+
  '<div class="key-h">Stories &rarr; where to see them</div>'+
- '<div class="key-row"><span>Flexible correspondence options</span><span>Template picker on a draft: RFI letter (request) or Return letter (notice). Name, PDF title, intro and closing text follow the template. <b>New</b> creates the next number across all correspondence. '+J('start','Go')+'</span></div>'+
- '<div class="key-row"><span>Record comments when closing</span><span>Close RFI letter 1 &mdash; comments are required and stay on the letter and in Assessment &rsaquo; Correspondence outcomes. '+J('corrSent','Go')+'</span></div>'+
+ '<div class="key-row"><span>Flexible correspondence options</span><span>Template picker on a draft: RFI letter (request) or Return letter (notice). Name, PDF title, intro and closing text follow the template. <b>+ Add issue</b> adds to the open draft, or starts the next round when there isn&rsquo;t one; numbering runs across all correspondence. '+J('start','Go')+'</span></div>'+
+ '<div class="key-row"><span>Record comments when closing</span><span>Close RFI letter 1 &mdash; comments are required and stay with that letter on the Manage correspondence page. '+J('corrSent','Go')+'</span></div>'+
  '<div class="key-row"><span>Request correspondence authorisation</span><span>Authority banner, Mark sent disabled with hover reason, Request authorisation picker, status updates, edit-after-endorsement warning, authorisation log. Toggle <b>Sean&rsquo;s authority to correspond</b> for the other path. '+J('start','Go')+'</span></div>'+
  '<div class="key-row"><span>Respond to correspondence authorisation</span><span>Nadine&rsquo;s Review tab &rarr; Start review &rarr; edit, reorder or remove issues (try the duplicate Streetscape) &rarr; Endorse or Return. Completed reviews land under Completed &rsaquo; Reviews. '+J('corrReq','Go')+'</span></div>'+
  '<div class="key-row"><span>Fix: NoD determination statement</span><span>Create Notice PDF. Line 1 determination, line 2 determining authority + LPP reference. '+J('fin','Go')+'</span></div>'+
@@ -1772,6 +1798,5 @@ document.getElementById('btn-key').addEventListener('click',function(){var o=kp.
 })();
 render();
 </script>
-<script src="https://build-au-feedback-widget.vercel.app/feedback-widget.js"></script>
 </body>
 </html>
